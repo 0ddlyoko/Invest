@@ -1,0 +1,11 @@
+name: Invest
+main: me.oddlyoko.invest.Invest
+version: 1.0
+author: 0ddlyoko
+commands:
+  invest:
+    description: Help Invest
+permissions:
+  invest.create:
+    default: op
+    description: Create a new invest

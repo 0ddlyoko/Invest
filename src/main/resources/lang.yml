@@ -1,0 +1,11 @@
+command:
+  syntaxerror: "Syntax error: "
+  nothuman: "Sorry but you must be a player to execute this command"
+  help:
+    create: "Create a new invest"
+  create:
+    nameExist: "This name already exists"
+    timetostay: "Please enter a valid time to stay"
+    investprice: "Please enter a valid invest price"
+    investearned: "Please enter a valid invest earned"
+    globalZone: "Warning: using __global__ as zone means the player will always be in invest mode"

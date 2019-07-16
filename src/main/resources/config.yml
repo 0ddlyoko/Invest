@@ -1,0 +1,23 @@
+mysql:
+  host: localhost
+  dbname: hdv
+  login: root
+  password: ''
+  port: 3306
+messages:
+  commands:
+    noPerm: "&4You don't have the permission to execute this command !"
+    noPlayer: "&4You must be a player to execute this command !"
+    badSyntax: "&4Syntax error, please use %s"
+    help:
+      help: "Displays this page"
+      info: "Show version and informations about this plugin"
+      add: "Add an item to the hdv"
+    add:
+      noitem: "&4You must have an item in your hand"
+      notint: "&4Please enter a correct value (%s)"
+      notamount: "&4You don't have enough items in your hand"
+      added: "&aSuccesfully added &e%amount%&a items of &e%item%&a at &e%price%&a$"
+      error: "&4An error has occured"
+  error: "&4An error has occured, please reconnect"
+  alreadyGet: "&4Wait tomorrow for getting a new recompense !"
