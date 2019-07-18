@@ -9,3 +9,6 @@ permissions:
   invest.create:
     default: op
     description: Create a new invest
+  invest.delete:
+    default: op
+    description: Delete an existing invest

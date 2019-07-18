@@ -53,13 +53,16 @@ public class CommandInvest implements CommandExecutor {
 				sender.sendMessage(ChatColor.AQUA
 						+ "- /invest create <name> <time-to-stay> <invest-price> <invest-earned> <worldguard-zone>"
 						+ ChatColor.YELLOW + " : " + L.get("command.help.create"));
+			if (sender.hasPermission("invest.delete"))
+				sender.sendMessage(ChatColor.AQUA + "- /invest delete <name>" + ChatColor.YELLOW + " : "
+						+ L.get("command.help.delete"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			sender.sendMessage(
 					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
 			sender.sendMessage(ChatColor.AQUA + "Created by 0ddlyoko");
 			sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
 			sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
-		} else if ("create".equalsIgnoreCase(args[0])) {
+		} else if ("create".equalsIgnoreCase(args[0]) || "add".equalsIgnoreCase(args[0])) {
 			if (args.length != 6) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replace("%s",
 						"/invest create <name> <time-to-stay> <invest-price> <invest-earned> <worldguard-zone>"));
@@ -123,14 +126,13 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.create.done"));
-		} else if ("delete".equalsIgnoreCase(args[0])) {
+		} else if ("delete".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) {
 			if (args.length != 2) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED
 						+ L.get("command.syntaxerror").replaceAll("%s", "/invest delete <name>"));
 				return true;
 			}
 			String name = args[1];
-			// TODO check if name doesn't exist
 			if (!Invest.get().getInvestManager().exist(name)) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.delete.nameNotExist"));
 				return true;

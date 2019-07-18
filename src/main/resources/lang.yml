@@ -3,6 +3,7 @@ command:
   nothuman: "Sorry but you must be a player to execute this command"
   help:
     create: "Create a new invest"
+    delete: "Delete an existing invest"
     info: "More information about the creator of the plugin"
     help: "Show this page"
   create:
