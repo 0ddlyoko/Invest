@@ -9,6 +9,7 @@ command:
     info: "More information about the creator of the plugin"
     help: "Show this page"
     infoInvest: "Show informations about an invest"
+    tp: "Teleport to the spawn of an invest"
   create:
     nameExist: "This name already exists"
     timetostay: "Please enter a valid time to stay that is gretter or equals to 1"
@@ -31,3 +32,6 @@ command:
     investEarned: "Invest Earned"
     worldguardZone: "WorldGuard Zone"
     spawn: "Spawn"
+  tp:
+    nameNotExist: "This name doesn't exist"
+    teleport: "Teleporting ..."

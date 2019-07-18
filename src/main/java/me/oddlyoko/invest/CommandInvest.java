@@ -62,6 +62,9 @@ public class CommandInvest implements CommandExecutor {
 			if (sender.hasPermission("invest.info"))
 				sender.sendMessage(ChatColor.AQUA + "- /invest info <name>" + ChatColor.YELLOW + " : "
 						+ L.get("command.help.infoInvest"));
+			if (sender.hasPermission("invest.tp"))
+				sender.sendMessage(
+						ChatColor.AQUA + "- /invest tp <name>" + ChatColor.YELLOW + " : " + L.get("command.help.tp"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
@@ -75,13 +78,8 @@ public class CommandInvest implements CommandExecutor {
 					return true;
 				}
 				String name = args[1];
-				if (!Invest.get().getInvestManager().exist(name)) {
-					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.info.nameNotExist"));
-					return true;
-				}
 				InvestType inv = Invest.get().getInvestManager().get(name);
 				if (inv == null) {
-					// Impossible
 					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.info.nameNotExist"));
 					return true;
 				}
@@ -207,6 +205,29 @@ public class CommandInvest implements CommandExecutor {
 				sender.sendMessage(ChatColor.AQUA + "- " + invest.getName());
 			sender.sendMessage(ChatColor.GREEN + L.get("command.list.count").replace("%s",
 					Integer.toString(Invest.get().getInvestManager().count())));
+		} else if ("tp".equalsIgnoreCase(args[0])) {
+			if (!sender.hasPermission("invest.tp")) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				return true;
+			}
+			if (args.length != 2) {
+				sender.sendMessage(
+						__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replaceAll("%s", "/invest tp <name>"));
+				return true;
+			}
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				return true;
+			}
+			Player p = (Player) sender;
+			String name = args[1];
+			InvestType inv = Invest.get().getInvestManager().get(name);
+			if (inv == null) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.tp.nameNotExist"));
+				return true;
+			}
+			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.tp.teleport"));
+			p.teleport(inv.getSpawn());
 		}
 		return true;
 	}
