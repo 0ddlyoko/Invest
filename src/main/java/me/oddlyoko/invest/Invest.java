@@ -39,24 +39,55 @@ public class Invest extends JavaPlugin {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ConfigManager configManager;
 	private InvestManager investManager;
+	private WorldGuardManager worldGuardManager;
 
 	@Override
 	public void onEnable() {
+		log.info("Loading plugin Invest");
 		invest = this;
+		log.info("Loading ConfigManager");
 		configManager = new ConfigManager();
+		log.info("done");
+		log.info("Loading Languages");
 		L.init();
+		log.info("done");
 		try {
+			log.info("Loading Languages");
 			investManager = new InvestManager();
+			log.info("done");
 		} catch (Exception ex) {
 			log.error("An unexpected error has occured while loading InvestManager: ", ex);
+			Bukkit.getPluginManager().disablePlugin(this);
+			setEnabled(false);
+			return;
 		}
+		log.info("Loading WorldGuardManager");
+		worldGuardManager = new WorldGuardManager();
+		try {
+			worldGuardManager.init(investManager.list());
+			log.info("done");
+		} catch (Exception ex) {
+			log.error("Error while loading WorldGuard: ", ex);
+			Bukkit.getPluginManager().disablePlugin(this);
+			setEnabled(false);
+			return;
+		}
+		log.info("Loading Commands");
 		Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
+		log.info("done");
+		log.info("Loading Listeners");
+		Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
+		log.info("done");
 		log.info("Plugin enabled");
 	}
 
 	@Override
 	public void onDisable() {
 		log.info("Plugin disabled");
+	}
+
+	public WorldGuardManager getWorldGuardManager() {
+		return worldGuardManager;
 	}
 
 	public ConfigManager getConfigManager() {

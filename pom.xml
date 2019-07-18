@@ -26,13 +26,6 @@
 		</developer>
 	</developers>
 
-	<!-- Configuration of repositories -->
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-	</repositories>
 	<build>
 		<defaultGoal>clean install</defaultGoal>
 		<finalName>Invest-${project.version}</finalName>
@@ -82,6 +75,18 @@
 		</plugins>
 	</build>
 
+	<!-- Configuration of repositories -->
+	<repositories>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>sk89q-repo</id>
+			<url>https://maven.sk89q.com/repo/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<!-- Logging -->
 		<dependency>
@@ -102,6 +107,14 @@
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>1.12.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- World Guard -->
+		<dependency>
+			<groupId>com.sk89q.worldguard</groupId>
+			<artifactId>worldguard-legacy</artifactId>
+			<version>6.2</version>
 			<scope>provided</scope>
 		</dependency>
 

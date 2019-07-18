@@ -93,14 +93,19 @@ public class InvestManager {
 		InvestType inv = new InvestType(name, timeToStay, investPrice, investEarned, worldguardZone, spawn);
 		synchronized (sync) {
 			invests.put(name, inv);
+			if (!Invest.get().getWorldGuardManager().loadRegion(inv)) {
+				log.error("An error has occured while loading region for invest " + name);
+				invests.remove(name);
+				return false;
+			}
 			try {
 				saveToFile();
-				return true;
 			} catch (Exception ex) {
 				invests.remove(name);
 				log.error("Error while saving invests to invest.json file: ", ex);
 				return false;
 			}
+			return true;
 		}
 	}
 

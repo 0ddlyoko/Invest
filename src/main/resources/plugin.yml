@@ -2,6 +2,7 @@ name: Invest
 main: me.oddlyoko.invest.Invest
 version: 1.0
 author: 0ddlyoko
+depend: [WorldGuard]
 commands:
   invest:
     description: Help Invest

@@ -8,6 +8,8 @@ import java.io.Serializable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 /**
  * MIT License
  * 
@@ -42,6 +44,7 @@ public class InvestType implements Serializable {
 	private transient Location spawnLoc;
 	// Gson
 	private SpawnType spawn;
+	private transient ProtectedRegion worldGuardRegion;
 
 	public InvestType() {
 	}
@@ -87,6 +90,19 @@ public class InvestType implements Serializable {
 			spawnLoc.setPitch(spawn.pos[4]);
 		}
 		return spawnLoc;
+	}
+
+	public void setWorldGuardRegion(ProtectedRegion worldGuardRegion) {
+		this.worldGuardRegion = worldGuardRegion;
+	}
+
+	public boolean isInside(Location loc) {
+		if ("__global__".equalsIgnoreCase(worldguardZone)
+				&& loc.getWorld().getName().equals(spawnLoc.getWorld().getName()))
+			return true;
+		if (worldGuardRegion == null)
+			return false;
+		return worldGuardRegion.contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
 
 	public class SpawnType implements Serializable {
