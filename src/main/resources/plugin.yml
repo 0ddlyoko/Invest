@@ -15,3 +15,6 @@ permissions:
   invest.list:
     default: op
     description: List all invests
+  invest.info:
+    default: op
+    description: Show informations about an invest

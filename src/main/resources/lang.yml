@@ -8,6 +8,7 @@ command:
     list: "List all invests"
     info: "More information about the creator of the plugin"
     help: "Show this page"
+    infoInvest: "Show informations about an invest"
   create:
     nameExist: "This name already exists"
     timetostay: "Please enter a valid time to stay that is gretter or equals to 1"
@@ -22,3 +23,11 @@ command:
     done: "Invest deleted"
   list:
     count: "Total: %s"
+  info:
+    nameNotExist: "This name doesn't exist"
+    name: "Name"
+    timeToStay: "Time to Stay"
+    investPrice: "Invest Price"
+    investEarned: "Invest Earned"
+    worldguardZone: "WorldGuard Zone"
+    spawn: "Spawn"

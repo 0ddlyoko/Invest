@@ -128,4 +128,8 @@ public class InvestManager {
 	public int count() {
 		return invests.size();
 	}
+
+	public InvestType get(String name) {
+		return invests.get(name);
+	}
 }

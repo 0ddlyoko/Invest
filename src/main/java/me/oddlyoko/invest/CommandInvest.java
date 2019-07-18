@@ -59,12 +59,53 @@ public class CommandInvest implements CommandExecutor {
 			if (sender.hasPermission("invest.list"))
 				sender.sendMessage(
 						ChatColor.AQUA + "- /invest list" + ChatColor.YELLOW + " : " + L.get("command.help.list"));
+			if (sender.hasPermission("invest.info"))
+				sender.sendMessage(ChatColor.AQUA + "- /invest info <name>" + ChatColor.YELLOW + " : "
+						+ L.get("command.help.infoInvest"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
-			sender.sendMessage(
-					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
-			sender.sendMessage(ChatColor.AQUA + "Created by 0ddlyoko");
-			sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
-			sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
+			if (args.length == 1) {
+				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
+						+ "]-----------");
+				sender.sendMessage(ChatColor.AQUA + "Created by 0ddlyoko");
+				sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
+				sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
+			} else {
+				if (!sender.hasPermission("invest.info")) {
+					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+					return true;
+				}
+				String name = args[1];
+				if (!Invest.get().getInvestManager().exist(name)) {
+					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.info.nameNotExist"));
+					return true;
+				}
+				InvestType inv = Invest.get().getInvestManager().get(name);
+				if (inv == null) {
+					// Impossible
+					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.info.nameNotExist"));
+					return true;
+				}
+				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
+						+ "]-----------");
+				sender.sendMessage(
+						ChatColor.AQUA + "- " + L.get("command.info.name") + ": " + ChatColor.YELLOW + inv.getName());
+				sender.sendMessage(ChatColor.AQUA + "- " + L.get("command.info.timeToStay") + ": " + ChatColor.YELLOW
+						+ inv.getTimeToStay());
+				sender.sendMessage(ChatColor.AQUA + "- " + L.get("command.info.investPrice") + ": " + ChatColor.YELLOW
+						+ inv.getInvestPrice());
+				sender.sendMessage(ChatColor.AQUA + "- " + L.get("command.info.investEarned") + ": " + ChatColor.YELLOW
+						+ inv.getInvestEarned());
+				sender.sendMessage(ChatColor.AQUA + "- " + L.get("command.info.worldguardZone") + ": "
+						+ ChatColor.YELLOW + inv.getWorldguardZone());
+				Location spawn = inv.getSpawn();
+				StringBuilder sb = new StringBuilder();
+				sb.append("x = ").append(String.format("%.2f", spawn.getX()));
+				sb.append(", y = ").append(String.format("%.2f", spawn.getY()));
+				sb.append(", z = ").append(String.format("%.2f", spawn.getZ()));
+				sb.append(", world = ").append(spawn.getWorld().getName());
+				sender.sendMessage(
+						ChatColor.AQUA + "- " + L.get("command.info.spawn") + ": " + ChatColor.YELLOW + sb.toString());
+			}
 		} else if ("create".equalsIgnoreCase(args[0]) || "add".equalsIgnoreCase(args[0])) {
 			if (!sender.hasPermission("invest.create")) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
