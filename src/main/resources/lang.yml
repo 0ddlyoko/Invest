@@ -1,9 +1,11 @@
 command:
   syntaxerror: "Syntax error: %s"
   nothuman: "Sorry but you must be a player to execute this command"
+  noperm: "You don't have permission to execute this command"
   help:
     create: "Create a new invest"
     delete: "Delete an existing invest"
+    list: "List all invests"
     info: "More information about the creator of the plugin"
     help: "Show this page"
   create:
@@ -18,3 +20,5 @@ command:
     nameNotExist: "This name doesn't exist"
     error: "An error has occured while deleting invest"
     done: "Invest deleted"
+  list:
+    count: "Total: %s"

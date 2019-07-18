@@ -56,6 +56,9 @@ public class CommandInvest implements CommandExecutor {
 			if (sender.hasPermission("invest.delete"))
 				sender.sendMessage(ChatColor.AQUA + "- /invest delete <name>" + ChatColor.YELLOW + " : "
 						+ L.get("command.help.delete"));
+			if (sender.hasPermission("invest.list"))
+				sender.sendMessage(
+						ChatColor.AQUA + "- /invest list" + ChatColor.YELLOW + " : " + L.get("command.help.list"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			sender.sendMessage(
 					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
@@ -63,6 +66,10 @@ public class CommandInvest implements CommandExecutor {
 			sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
 			sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
 		} else if ("create".equalsIgnoreCase(args[0]) || "add".equalsIgnoreCase(args[0])) {
+			if (!sender.hasPermission("invest.create")) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				return true;
+			}
 			if (args.length != 6) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replace("%s",
 						"/invest create <name> <time-to-stay> <invest-price> <invest-earned> <worldguard-zone>"));
@@ -127,6 +134,10 @@ public class CommandInvest implements CommandExecutor {
 			}
 			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.create.done"));
 		} else if ("delete".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) {
+			if (!sender.hasPermission("invest.delete")) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				return true;
+			}
 			if (args.length != 2) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED
 						+ L.get("command.syntaxerror").replaceAll("%s", "/invest delete <name>"));
@@ -144,6 +155,17 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.delete.done"));
+		} else if ("list".equalsIgnoreCase(args[0])) {
+			if (!sender.hasPermission("invest.list")) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				return true;
+			}
+			sender.sendMessage(
+					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
+			for (InvestType invest : Invest.get().getInvestManager().list())
+				sender.sendMessage(ChatColor.AQUA + "- " + invest.getName());
+			sender.sendMessage(ChatColor.GREEN + L.get("command.list.count").replace("%s",
+					Integer.toString(Invest.get().getInvestManager().count())));
 		}
 		return true;
 	}

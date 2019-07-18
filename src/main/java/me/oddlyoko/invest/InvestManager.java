@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,5 +119,13 @@ public class InvestManager {
 				return false;
 			}
 		}
+	}
+
+	public Collection<InvestType> list() {
+		return invests.values();
+	}
+
+	public int count() {
+		return invests.size();
 	}
 }

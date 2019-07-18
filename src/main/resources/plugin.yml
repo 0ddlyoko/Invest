@@ -12,3 +12,6 @@ permissions:
   invest.delete:
     default: op
     description: Delete an existing invest
+  invest.list:
+    default: op
+    description: List all invests
