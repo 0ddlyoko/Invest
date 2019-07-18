@@ -1,11 +1,19 @@
 command:
-  syntaxerror: "Syntax error: "
+  syntaxerror: "Syntax error: %s"
   nothuman: "Sorry but you must be a player to execute this command"
   help:
     create: "Create a new invest"
+    info: "More information about the creator of the plugin"
+    help: "Show this page"
   create:
     nameExist: "This name already exists"
-    timetostay: "Please enter a valid time to stay"
-    investprice: "Please enter a valid invest price"
-    investearned: "Please enter a valid invest earned"
-    globalZone: "Warning: using __global__ as zone means the player will always be in invest mode"
+    timetostay: "Please enter a valid time to stay that is gretter or equals to 1"
+    investprice: "Please enter a valid invest price that is gretter or equals to 1"
+    investearned: "Please enter a valid invest earned that is gretter or equals to 1"
+    globalZone: "Warning: using __global__ as zone means the player will always be in invest mode in this world"
+    error: "An error has occured while deleting invest"
+    done: "Invest created"
+  delete:
+    nameNotExist: "This name doesn't exist"
+    error: "An error has occured while deleting invest"
+    done: "Invest deleted"

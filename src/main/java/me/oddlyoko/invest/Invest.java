@@ -38,12 +38,18 @@ public class Invest extends JavaPlugin {
 	private static Invest invest;
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ConfigManager configManager;
+	private InvestManager investManager;
 
 	@Override
 	public void onEnable() {
 		invest = this;
 		configManager = new ConfigManager();
 		L.init();
+		try {
+			investManager = new InvestManager();
+		} catch (Exception ex) {
+			log.error("An unexpected error has occured while loading InvestManager: ", ex);
+		}
 		Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
 		log.info("Plugin enabled");
 	}
@@ -55,6 +61,10 @@ public class Invest extends JavaPlugin {
 
 	public ConfigManager getConfigManager() {
 		return configManager;
+	}
+
+	public InvestManager getInvestManager() {
+		return investManager;
 	}
 
 	public static Invest get() {

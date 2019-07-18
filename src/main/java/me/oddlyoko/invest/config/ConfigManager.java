@@ -30,38 +30,8 @@ import java.io.File;
  */
 public class ConfigManager {
 	private Config config;
-	private String host;
-	private String dbName;
-	private String login;
-	private String password;
-	private int port;
 
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
-		host = config.getString("mysql.host");
-		dbName = config.getString("mysql.dbname");
-		login = config.getString("mysql.login");
-		password = config.getString("mysql.password");
-		port = config.getInt("mysql.port");
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public String getDbName() {
-		return dbName;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public int getPort() {
-		return port;
 	}
 }

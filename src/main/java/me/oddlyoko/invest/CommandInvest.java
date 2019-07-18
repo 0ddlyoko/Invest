@@ -4,6 +4,7 @@
 package me.oddlyoko.invest;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,17 +44,21 @@ public class CommandInvest implements CommandExecutor {
 		if (args.length == 0 || "help".equalsIgnoreCase(args[0])) {
 			// Help
 			sender.sendMessage(
-					ChatColor.YELLOW + "---------" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "---------");
+					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
+			sender.sendMessage(
+					ChatColor.AQUA + "- /invest info" + ChatColor.YELLOW + " : " + L.get("command.help.info"));
+			sender.sendMessage(
+					ChatColor.AQUA + "- /invest help" + ChatColor.YELLOW + " : " + L.get("command.help.help"));
 			if (sender.hasPermission("invest.create"))
 				sender.sendMessage(ChatColor.AQUA
 						+ "- /invest create <name> <time-to-stay> <invest-price> <invest-earned> <worldguard-zone>"
-						+ ChatColor.YELLOW + "");
+						+ ChatColor.YELLOW + " : " + L.get("command.help.create"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			sender.sendMessage(
-					ChatColor.YELLOW + "---------" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "---------");
-			sender.sendMessage("Created by 0ddlyoko");
-			sender.sendMessage("https://www.0ddlyoko.be");
-			sender.sendMessage("https://www.github.com/0ddlyoko");
+					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
+			sender.sendMessage(ChatColor.AQUA + "Created by 0ddlyoko");
+			sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
+			sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
 		} else if ("create".equalsIgnoreCase(args[0])) {
 			if (args.length != 6) {
 				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replace("%s",
@@ -71,7 +76,7 @@ public class CommandInvest implements CommandExecutor {
 			int investEarned;
 			String worldguardZone = args[5];
 			// TODO Check if name already exists
-			if (false) {
+			if (Invest.get().getInvestManager().exist(name)) {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.nameExist"));
 				return true;
 			}
@@ -82,10 +87,18 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.timetostay"));
 				return true;
 			}
+			if (timeToStay < 1) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.timetostay"));
+				return true;
+			}
 			// Invalid price
 			try {
 				investPrice = Integer.parseInt(args[3]);
 			} catch (NumberFormatException ex) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investprice"));
+				return true;
+			}
+			if (investPrice < 1) {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investprice"));
 				return true;
 			}
@@ -96,10 +109,39 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investearned"));
 				return true;
 			}
+			if (investEarned < 1) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investearned"));
+				return true;
+			}
 			if ("__global__".equalsIgnoreCase(worldguardZone))
 				p.sendMessage(__.PREFIX + ChatColor.YELLOW + L.get("command.create.globalZone"));
+			Location spawn = p.getLocation();
+			if (!Invest.get().getInvestManager().createInvest(name, timeToStay, investPrice, investEarned,
+					worldguardZone, spawn)) {
+				// Error
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.error"));
+				return true;
+			}
+			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.create.done"));
 		} else if ("delete".equalsIgnoreCase(args[0])) {
-
+			if (args.length != 2) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED
+						+ L.get("command.syntaxerror").replaceAll("%s", "/invest delete <name>"));
+				return true;
+			}
+			String name = args[1];
+			// TODO check if name doesn't exist
+			if (!Invest.get().getInvestManager().exist(name)) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.delete.nameNotExist"));
+				return true;
+			}
+			// Delete
+			if (!Invest.get().getInvestManager().deleteInvest(name)) {
+				// Error
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.delete.error"));
+				return true;
+			}
+			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.delete.done"));
 		}
 		return true;
 	}

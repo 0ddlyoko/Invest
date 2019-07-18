@@ -4,7 +4,15 @@
 package me.oddlyoko.invest.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MIT License
@@ -30,24 +38,38 @@ import java.util.HashMap;
  * SOFTWARE.
  */
 public final class L {
+	private static boolean init = false;
+	private static Logger log = LoggerFactory.getLogger(L.class);
 	private static Config config;
-	private static HashMap<String, String> messages;
-
-	static {
-		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "lang.yml"));
-		put("command.syntaxerror");
-		put("command.nothuman");
-		put("command.help.create");
-		put("command.create.nameExist");
-		put("command.create.timetostay");
-		put("command.create.investprice");
-		put("command.create.investearned");
-	}
+	private static Map<String, String> messages;
 
 	private L() {
 	}
 
 	public static void init() {
+		if (init)
+			return;
+		init = true;
+		File lang = new File("plugins" + File.separator + "Invest" + File.separator + "lang.yml");
+		if (!lang.exists()) {
+			try {
+				lang.getParentFile().mkdirs();
+				lang.createNewFile();
+				InputStream is = L.class.getClassLoader().getResourceAsStream("lang.yml");
+				if (is != null) {
+					YamlConfiguration yamlConf = YamlConfiguration.loadConfiguration(new InputStreamReader(is));
+					yamlConf.save(lang);
+				} else
+					throw new FileNotFoundException("File lang.yml doesn't exist in jar file");
+			} catch (Exception ex) {
+				log.error("An error has occured while creating Invest directory:", ex);
+			}
+		}
+		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "lang.yml"));
+		messages = new HashMap<>();
+		// Load messages
+		for (String key : config.getAllKeys())
+			put(key);
 	}
 
 	private static void put(String key) {
