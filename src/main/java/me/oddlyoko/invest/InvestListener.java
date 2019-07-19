@@ -3,7 +3,6 @@
  */
 package me.oddlyoko.invest;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,6 +39,7 @@ public class InvestListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		Invest.get().getInvestManager().loadPlayer(p);
+		Invest.get().getInvestManager().playerMove(e.getPlayer());
 	}
 
 	@EventHandler
@@ -50,9 +50,6 @@ public class InvestListener implements Listener {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		Location loc = p.getLocation();
-		for (InvestType inv : Invest.get().getInvestManager().list())
-			System.out.println("Is player inside " + inv.getName() + " : " + inv.isInside(loc));
+		Invest.get().getInvestManager().playerMove(e.getPlayer());
 	}
 }

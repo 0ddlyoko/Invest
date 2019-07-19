@@ -52,8 +52,12 @@ import me.oddlyoko.invest.config.PlayerInvest;
 public class InvestManager {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private File jsonFile;
+	// List of available invests
 	private Map<String, InvestType> invests;
+	// List of PlayerInvest (for connected players)
 	private Map<UUID, PlayerInvest> players;
+	// List of PlayerInvest for players that are inside their invest zone-
+	private Map<UUID, PlayerInvest> playerInside;
 	private Object sync = new Object();
 
 	public InvestManager() throws Exception {
@@ -69,14 +73,15 @@ public class InvestManager {
 				log.error("An error has occured while creating invest.json:", ex);
 			}
 		}
+		invests = new HashMap<>();
+		players = new HashMap<>();
+		playerInside = new HashMap<>();
 		loadFromFile();
-		loadPlayers();
 	}
 
-	public void loadFromFile() throws IOException {
+	private void loadFromFile() throws IOException {
 		try (JsonReader reader = new JsonReader(new FileReader(jsonFile))) {
 			InvestType[] data = new GsonBuilder().create().fromJson(reader, InvestType[].class);
-			invests = new HashMap<>();
 			if (data == null)
 				return;
 			for (InvestType it : data)
@@ -85,14 +90,56 @@ public class InvestManager {
 	}
 
 	public void loadPlayers() {
-		players = new HashMap<>();
-		// Cast to an array (to prevent players that join the server during this
-		// process)
-		Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
-		for (Player p : players) {
+		for (Player p : Bukkit.getOnlinePlayers())
 			loadPlayer(p);
-		}
 	}
+
+	/**
+	 * On player move
+	 * 
+	 * @param p
+	 */
+	public void playerMove(Player p) {
+		Location loc = p.getLocation();
+		PlayerInvest inv = getInvest(p);
+		if (inv == null)
+			return;
+		boolean isInside = inv.getInvestType().isInside(loc);
+		boolean containPlayerInside = playerInside.containsKey(p.getUniqueId());
+		log.info("loc: {}, isInside: {}, containPlayerInside: {}", loc, isInside, containPlayerInside);
+		if (isInside && !containPlayerInside)
+			enterZone(p, inv);
+		else if (!isInside && containPlayerInside)
+			exitZone(p, inv);
+	}
+
+	/**
+	 * When a player enter to his zone
+	 * 
+	 * @param p
+	 * @param inv
+	 */
+	private void enterZone(Player p, PlayerInvest inv) {
+		// Player join the invest zone
+		playerInside.put(p.getUniqueId(), inv);
+		p.sendMessage("Entering invest zone");
+	}
+
+	/**
+	 * When a player leave his zone
+	 * 
+	 * @param p
+	 * @param inv
+	 */
+	private void exitZone(Player p, PlayerInvest inv) {
+		if (inv == null || !playerInside.containsKey(p.getUniqueId()))
+			return;
+		// Player quit the invest zone
+		playerInside.remove(p.getUniqueId());
+		p.sendMessage("Leaving invest zone");
+	}
+
+	// ------------------------------------------------------------------------------
 
 	/**
 	 * Load specific player
@@ -123,6 +170,8 @@ public class InvestManager {
 		}
 		PlayerInvest pi = new PlayerInvest(uuid, investType, time);
 		this.players.put(uuid, pi);
+		// Simulate a move to check if he is inside the invest zone
+		playerMove(p);
 	}
 
 	/**
@@ -136,6 +185,8 @@ public class InvestManager {
 			return;
 		savePlayer(p);
 		players.remove(p.getUniqueId());
+		// Simulate a zone exit
+		exitZone(p, playerInside.get(p.getUniqueId()));
 	}
 
 	/**
@@ -169,6 +220,8 @@ public class InvestManager {
 		PlayerInvest pi = new PlayerInvest(p.getUniqueId(), inv, inv.getTimeToStay());
 		players.put(p.getUniqueId(), pi);
 		Invest.get().getPlayerManager().save(p.getUniqueId(), inv.getName(), inv.getTimeToStay());
+		// Simulate a player move
+		playerMove(p);
 	}
 
 	/**
@@ -179,7 +232,11 @@ public class InvestManager {
 	public void stopInvest(Player p) {
 		players.remove(p.getUniqueId());
 		Invest.get().getPlayerManager().delete(p.getUniqueId());
+		// Simulate a player move
+		exitZone(p, playerInside.get(p.getUniqueId()));
 	}
+
+	// ------------------------------------------------------------------------------
 
 	private void saveToFile() throws IOException {
 		InvestType[] data = invests.values().toArray(new InvestType[0]);

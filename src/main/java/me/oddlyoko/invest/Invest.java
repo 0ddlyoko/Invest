@@ -4,6 +4,7 @@
 package me.oddlyoko.invest;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class Invest extends JavaPlugin {
 			playerManager = new PlayerManager();
 			log.info("done");
 			try {
-				log.info("Loading Languages");
+				log.info("Loading InvestManager");
 				investManager = new InvestManager();
 				log.info("done");
 			} catch (Exception ex) {
@@ -84,6 +85,9 @@ public class Invest extends JavaPlugin {
 			log.info("Loading Listeners");
 			Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
 			log.info("done");
+			log.info("Loading Players");
+			investManager.loadPlayers();
+			log.info("done");
 			log.info("Plugin enabled");
 		} catch (Exception ex) {
 			log.error("An error has occured while loading Invest");
@@ -94,6 +98,8 @@ public class Invest extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		for (Player p : Bukkit.getOnlinePlayers())
+			investManager.unloadPlayer(p);
 		log.info("Plugin disabled");
 	}
 
