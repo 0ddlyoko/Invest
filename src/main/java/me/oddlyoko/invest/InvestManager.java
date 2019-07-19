@@ -106,7 +106,6 @@ public class InvestManager {
 			return;
 		boolean isInside = inv.getInvestType().isInside(loc);
 		boolean containPlayerInside = playerInside.containsKey(p.getUniqueId());
-		log.info("loc: {}, isInside: {}, containPlayerInside: {}", loc, isInside, containPlayerInside);
 		if (isInside && !containPlayerInside)
 			enterZone(p, inv);
 		else if (!isInside && containPlayerInside)
