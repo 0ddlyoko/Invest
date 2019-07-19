@@ -7,9 +7,11 @@ command:
     delete: "Delete an existing invest"
     list: "List all invests"
     info: "More information about the creator of the plugin"
-    help: "Show this page"
     infoInvest: "Show informations about an invest"
     tp: "Teleport to the spawn of an invest"
+    start: "Start an invest"
+    stop: "Stop current invest"
+    help: "Show this page"
   create:
     nameExist: "This name already exists"
     timetostay: "Please enter a valid time to stay that is gretter or equals to 1"
@@ -35,3 +37,11 @@ command:
   tp:
     nameNotExist: "This name doesn't exist"
     teleport: "Teleporting ..."
+  start:
+    alreadyInvest: "You currently have an invest, please do /invest stop to stop your invest"
+    done: "Invest started, please execute /invest join to be teleport to the invest zone"
+    nameNotExist: "This name doesn't exist"
+  stop:
+    notInvest: "You don't have an invest"
+    done: "Invest stopped"
+errorLoading: "An error has occured, please contact your administrator to fix it"

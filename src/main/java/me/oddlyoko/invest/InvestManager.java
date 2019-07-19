@@ -11,13 +11,20 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+
+import me.oddlyoko.invest.config.L;
+import me.oddlyoko.invest.config.PlayerInvest;
 
 /**
  * MIT License
@@ -46,6 +53,7 @@ public class InvestManager {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private File jsonFile;
 	private Map<String, InvestType> invests;
+	private Map<UUID, PlayerInvest> players;
 	private Object sync = new Object();
 
 	public InvestManager() throws Exception {
@@ -62,6 +70,7 @@ public class InvestManager {
 			}
 		}
 		loadFromFile();
+		loadPlayers();
 	}
 
 	public void loadFromFile() throws IOException {
@@ -75,6 +84,103 @@ public class InvestManager {
 		}
 	}
 
+	public void loadPlayers() {
+		players = new HashMap<>();
+		// Cast to an array (to prevent players that join the server during this
+		// process)
+		Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
+		for (Player p : players) {
+			loadPlayer(p);
+		}
+	}
+
+	/**
+	 * Load specific player
+	 * 
+	 * @param p
+	 */
+	public void loadPlayer(Player p) {
+		log.info("Loading player {}", p.getName());
+		// Player already loaded
+		if (players.containsKey(p.getUniqueId()))
+			return;
+		// Does the player have an invest ?
+		if (!Invest.get().getPlayerManager().existPlayer(p))
+			return;
+		UUID uuid = p.getUniqueId();
+		String type = Invest.get().getPlayerManager().getType(uuid);
+		InvestType investType = invests.get(type);
+		int time = Invest.get().getPlayerManager().getTime(uuid);
+		if (investType == null || time == 0) {
+			// Error
+			log.error(
+					"InvestType is null or time is empty, please check if player.yml file hasn't been corrompted (or edited manually) for this player");
+			log.error("uuid = {}, type = {}, investType = {}, time = {}", uuid, type,
+					investType == null ? "null" : investType.getName(), time);
+			p.sendMessage(__.PREFIX + ChatColor.RED + L.get("errorLoading"));
+			Invest.get().getPlayerManager().delete(uuid);
+			return;
+		}
+		PlayerInvest pi = new PlayerInvest(uuid, investType, time);
+		this.players.put(uuid, pi);
+	}
+
+	/**
+	 * Unload specific player
+	 * 
+	 * @param p
+	 */
+	public void unloadPlayer(Player p) {
+		log.info("Unloading player {}", p.getName());
+		if (!players.containsKey(p.getUniqueId()))
+			return;
+		savePlayer(p);
+		players.remove(p.getUniqueId());
+	}
+
+	/**
+	 * Save the invest of specific player in config file
+	 * 
+	 * @param p
+	 */
+	public void savePlayer(Player p) {
+		log.info("Saving player {}", p.getName());
+		if (!players.containsKey(p.getUniqueId()))
+			return;
+		PlayerInvest pi = players.get(p.getUniqueId());
+		Invest.get().getPlayerManager().save(p.getUniqueId(), pi.getInvestType().getName(), pi.getTime());
+	}
+
+	public boolean hasInvest(Player p) {
+		return players.containsKey(p.getUniqueId());
+	}
+
+	public PlayerInvest getInvest(Player p) {
+		return players.get(p.getUniqueId());
+	}
+
+	/**
+	 * Start an invest for specific player
+	 * 
+	 * @param p
+	 * @param inv
+	 */
+	public void startInvest(Player p, InvestType inv) {
+		PlayerInvest pi = new PlayerInvest(p.getUniqueId(), inv, inv.getTimeToStay());
+		players.put(p.getUniqueId(), pi);
+		Invest.get().getPlayerManager().save(p.getUniqueId(), inv.getName(), inv.getTimeToStay());
+	}
+
+	/**
+	 * Stop current invest for specific player
+	 * 
+	 * @param p
+	 */
+	public void stopInvest(Player p) {
+		players.remove(p.getUniqueId());
+		Invest.get().getPlayerManager().delete(p.getUniqueId());
+	}
+
 	private void saveToFile() throws IOException {
 		InvestType[] data = invests.values().toArray(new InvestType[0]);
 		try (Writer writer = new FileWriter(jsonFile)) {
@@ -86,6 +192,17 @@ public class InvestManager {
 		return invests.containsKey(name);
 	}
 
+	/**
+	 * Create a new invest
+	 * 
+	 * @param name
+	 * @param timeToStay
+	 * @param investPrice
+	 * @param investEarned
+	 * @param worldguardZone
+	 * @param spawn
+	 * @return
+	 */
 	public boolean createInvest(String name, int timeToStay, int investPrice, int investEarned, String worldguardZone,
 			Location spawn) {
 		if (invests.containsKey(name))
@@ -109,6 +226,12 @@ public class InvestManager {
 		}
 	}
 
+	/**
+	 * Delete an existing invest
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public boolean deleteInvest(String name) {
 		if (!invests.containsKey(name))
 			return false;

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.oddlyoko.invest.config.L;
+import me.oddlyoko.invest.config.PlayerInvest;
 
 /**
  * MIT License
@@ -65,6 +66,10 @@ public class CommandInvest implements CommandExecutor {
 			if (sender.hasPermission("invest.tp"))
 				sender.sendMessage(
 						ChatColor.AQUA + "- /invest tp <name>" + ChatColor.YELLOW + " : " + L.get("command.help.tp"));
+			sender.sendMessage(
+					ChatColor.AQUA + "- /invest start <name>" + ChatColor.YELLOW + " : " + L.get("command.help.start"));
+			sender.sendMessage(
+					ChatColor.AQUA + "- /invest stop" + ChatColor.YELLOW + " : " + L.get("command.help.stop"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
@@ -228,6 +233,41 @@ public class CommandInvest implements CommandExecutor {
 			}
 			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.tp.teleport"));
 			p.teleport(inv.getSpawn());
+		} else if ("start".equalsIgnoreCase(args[0])) {
+			if (args.length != 2) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED
+						+ L.get("command.syntaxerror").replaceAll("%s", "/invest start <name>"));
+				return true;
+			}
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				return true;
+			}
+			Player p = (Player) sender;
+			if (Invest.get().getInvestManager().hasInvest(p)) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.alreadyInvest"));
+				return true;
+			}
+			String name = args[1];
+			InvestType inv = Invest.get().getInvestManager().get(name);
+			if (inv == null) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.nameNotExist"));
+				return true;
+			}
+			Invest.get().getInvestManager().startInvest(p, inv);
+			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.start.done"));
+		} else if ("stop".equalsIgnoreCase(args[0])) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				return true;
+			}
+			Player p = (Player) sender;
+			if (!Invest.get().getInvestManager().hasInvest(p)) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.stop.notInvest"));
+				return true;
+			}
+			Invest.get().getInvestManager().stopInvest(p);
+			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.stop.done"));
 		}
 		return true;
 	}

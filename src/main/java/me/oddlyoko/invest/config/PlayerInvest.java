@@ -1,15 +1,11 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.config;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import java.util.UUID;
+
+import me.oddlyoko.invest.InvestType;
 
 /**
  * MIT License
@@ -34,25 +30,30 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class InvestListener implements Listener {
+public class PlayerInvest {
+	private UUID uuid;
+	private InvestType investType;
+	private int time;
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		Invest.get().getInvestManager().loadPlayer(p);
+	public PlayerInvest(UUID uuid, InvestType investType, int time) {
+		this.uuid = uuid;
+		this.investType = investType;
+		this.time = time;
 	}
 
-	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent e) {
-		Player p = e.getPlayer();
-		Invest.get().getInvestManager().unloadPlayer(p);
+	public UUID getUUID() {
+		return uuid;
 	}
 
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		Location loc = p.getLocation();
-		for (InvestType inv : Invest.get().getInvestManager().list())
-			System.out.println("Is player inside " + inv.getName() + " : " + inv.isInside(loc));
+	public InvestType getInvestType() {
+		return investType;
+	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void cooldown() {
+		time--;
 	}
 }

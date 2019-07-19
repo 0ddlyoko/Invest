@@ -1,15 +1,14 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.config;
 
-import org.bukkit.Location;
+import java.io.File;
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MIT License
@@ -34,25 +33,34 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class InvestListener implements Listener {
+public class PlayerManager {
+	private Logger log = LoggerFactory.getLogger(getClass());
+	private Config config;
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		Invest.get().getInvestManager().loadPlayer(p);
+	public PlayerManager() {
+		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "player.yml"));
 	}
 
-	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent e) {
-		Player p = e.getPlayer();
-		Invest.get().getInvestManager().unloadPlayer(p);
+	public boolean existPlayer(Player p) {
+		return config.exist(p.getUniqueId().toString());
 	}
 
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		Location loc = p.getLocation();
-		for (InvestType inv : Invest.get().getInvestManager().list())
-			System.out.println("Is player inside " + inv.getName() + " : " + inv.isInside(loc));
+	public String getType(UUID uuid) {
+		return config.getString(uuid.toString() + ".type");
+	}
+
+	public int getTime(UUID uuid) {
+		return config.getInt(uuid.toString() + ".time");
+	}
+
+	public void delete(UUID uuid) {
+		log.info("Deleting uuid {}", uuid);
+		config.set(uuid.toString(), null);
+	}
+
+	public void save(UUID uuid, String type, int time) {
+		log.info("Creating / Saving an entry: uuid = {}, type = {}, time = {}", uuid, type, time);
+		config.set(uuid.toString() + ".type", type);
+		config.set(uuid.toString() + ".time", time);
 	}
 }

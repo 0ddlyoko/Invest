@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import me.oddlyoko.invest.config.ConfigManager;
 import me.oddlyoko.invest.config.L;
+import me.oddlyoko.invest.config.PlayerManager;
 
 /**
  * MIT License
@@ -40,45 +41,55 @@ public class Invest extends JavaPlugin {
 	private ConfigManager configManager;
 	private InvestManager investManager;
 	private WorldGuardManager worldGuardManager;
+	private PlayerManager playerManager;
 
 	@Override
 	public void onEnable() {
-		log.info("Loading plugin Invest");
-		invest = this;
-		log.info("Loading ConfigManager");
-		configManager = new ConfigManager();
-		log.info("done");
-		log.info("Loading Languages");
-		L.init();
-		log.info("done");
 		try {
+			log.info("Loading plugin Invest");
+			invest = this;
+			log.info("Loading ConfigManager");
+			configManager = new ConfigManager();
+			log.info("done");
 			log.info("Loading Languages");
-			investManager = new InvestManager();
+			L.init();
 			log.info("done");
+			log.info("Loading PlayerManager");
+			playerManager = new PlayerManager();
+			log.info("done");
+			try {
+				log.info("Loading Languages");
+				investManager = new InvestManager();
+				log.info("done");
+			} catch (Exception ex) {
+				log.error("An unexpected error has occured while loading InvestManager: ", ex);
+				Bukkit.getPluginManager().disablePlugin(this);
+				setEnabled(false);
+				return;
+			}
+			log.info("Loading WorldGuardManager");
+			worldGuardManager = new WorldGuardManager();
+			try {
+				worldGuardManager.init(investManager.list());
+				log.info("done");
+			} catch (Exception ex) {
+				log.error("Error while loading WorldGuard: ", ex);
+				Bukkit.getPluginManager().disablePlugin(this);
+				setEnabled(false);
+				return;
+			}
+			log.info("Loading Commands");
+			Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
+			log.info("done");
+			log.info("Loading Listeners");
+			Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
+			log.info("done");
+			log.info("Plugin enabled");
 		} catch (Exception ex) {
-			log.error("An unexpected error has occured while loading InvestManager: ", ex);
+			log.error("An error has occured while loading Invest");
 			Bukkit.getPluginManager().disablePlugin(this);
 			setEnabled(false);
-			return;
 		}
-		log.info("Loading WorldGuardManager");
-		worldGuardManager = new WorldGuardManager();
-		try {
-			worldGuardManager.init(investManager.list());
-			log.info("done");
-		} catch (Exception ex) {
-			log.error("Error while loading WorldGuard: ", ex);
-			Bukkit.getPluginManager().disablePlugin(this);
-			setEnabled(false);
-			return;
-		}
-		log.info("Loading Commands");
-		Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
-		log.info("done");
-		log.info("Loading Listeners");
-		Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
-		log.info("done");
-		log.info("Plugin enabled");
 	}
 
 	@Override
@@ -96,6 +107,10 @@ public class Invest extends JavaPlugin {
 
 	public InvestManager getInvestManager() {
 		return investManager;
+	}
+
+	public PlayerManager getPlayerManager() {
+		return playerManager;
 	}
 
 	public static Invest get() {
