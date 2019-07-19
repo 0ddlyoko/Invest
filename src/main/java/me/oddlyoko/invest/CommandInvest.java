@@ -266,7 +266,7 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.stop.notInvest"));
 				return true;
 			}
-			Invest.get().getInvestManager().stopInvest(p);
+			Invest.get().getInvestManager().stopInvest(p.getUniqueId());
 			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.stop.done"));
 		} else if ("get".equalsIgnoreCase(args[0])) {
 			// TODO REMOVE IT

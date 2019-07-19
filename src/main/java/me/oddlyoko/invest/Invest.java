@@ -44,6 +44,8 @@ public class Invest extends JavaPlugin {
 	private WorldGuardManager worldGuardManager;
 	private PlayerManager playerManager;
 
+	boolean end = false;
+
 	@Override
 	public void onEnable() {
 		try {
@@ -88,6 +90,7 @@ public class Invest extends JavaPlugin {
 			log.info("Loading Players");
 			investManager.loadPlayers();
 			log.info("done");
+			investManager.startScheduler();
 			log.info("Plugin enabled");
 		} catch (Exception ex) {
 			log.error("An error has occured while loading Invest");
@@ -98,8 +101,12 @@ public class Invest extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (Player p : Bukkit.getOnlinePlayers())
-			investManager.unloadPlayer(p);
+		end = true;
+		if (investManager != null) {
+			for (Player p : Bukkit.getOnlinePlayers())
+				investManager.unloadPlayer(p);
+			investManager.stopScheduler();
+		}
 		log.info("Plugin disabled");
 	}
 

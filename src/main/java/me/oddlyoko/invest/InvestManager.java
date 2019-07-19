@@ -94,6 +94,47 @@ public class InvestManager {
 			loadPlayer(p);
 	}
 
+	// ------------------------------------------------------------------------------
+
+	private boolean run = false;
+
+	public void startScheduler() {
+		run = true;
+		// I use Thread instance of BukkitRunnable for one reason: If the server tps is
+		// low this method will anyways be executed each seconds
+		Thread t = new Thread(() -> {
+			log.info("Entering loop");
+			while (run && !Thread.interrupted()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
+					log.error("InterruptedException !", ex);
+				}
+				for (PlayerInvest pi : playerInside.values()) {
+					pi.cooldown();
+					if (pi.getTime() <= 0) {
+						// End
+						stopInvest(pi.getUUID());
+						Player p = Bukkit.getPlayer(pi.getUUID());
+						if (p != null)
+							p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
+									Integer.toString(pi.getInvestType().getInvestEarned())));
+						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
+								pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
+					}
+				}
+			}
+			log.info("Exiting loop");
+		});
+		t.start();
+	}
+
+	public void stopScheduler() {
+		run = false;
+	}
+
+	// ------------------------------------------------------------------------------
+
 	/**
 	 * On player move
 	 * 
@@ -109,7 +150,7 @@ public class InvestManager {
 		if (isInside && !containPlayerInside)
 			enterZone(p, inv);
 		else if (!isInside && containPlayerInside)
-			exitZone(p, inv);
+			exitZone(p.getUniqueId(), inv);
 	}
 
 	/**
@@ -121,21 +162,19 @@ public class InvestManager {
 	private void enterZone(Player p, PlayerInvest inv) {
 		// Player join the invest zone
 		playerInside.put(p.getUniqueId(), inv);
-		p.sendMessage("Entering invest zone");
 	}
 
 	/**
 	 * When a player leave his zone
 	 * 
-	 * @param p
+	 * @param uuid
 	 * @param inv
 	 */
-	private void exitZone(Player p, PlayerInvest inv) {
-		if (inv == null || !playerInside.containsKey(p.getUniqueId()))
+	private void exitZone(UUID uuid, PlayerInvest inv) {
+		if (inv == null || !playerInside.containsKey(uuid))
 			return;
 		// Player quit the invest zone
-		playerInside.remove(p.getUniqueId());
-		p.sendMessage("Leaving invest zone");
+		playerInside.remove(uuid);
 	}
 
 	// ------------------------------------------------------------------------------
@@ -185,7 +224,7 @@ public class InvestManager {
 		savePlayer(p);
 		players.remove(p.getUniqueId());
 		// Simulate a zone exit
-		exitZone(p, playerInside.get(p.getUniqueId()));
+		exitZone(p.getUniqueId(), playerInside.get(p.getUniqueId()));
 	}
 
 	/**
@@ -226,13 +265,13 @@ public class InvestManager {
 	/**
 	 * Stop current invest for specific player
 	 * 
-	 * @param p
+	 * @param uuid
 	 */
-	public void stopInvest(Player p) {
-		players.remove(p.getUniqueId());
-		Invest.get().getPlayerManager().delete(p.getUniqueId());
+	public void stopInvest(UUID uuid) {
+		players.remove(uuid);
+		Invest.get().getPlayerManager().delete(uuid);
 		// Simulate a player move
-		exitZone(p, playerInside.get(p.getUniqueId()));
+		exitZone(uuid, playerInside.get(uuid));
 	}
 
 	// ------------------------------------------------------------------------------
