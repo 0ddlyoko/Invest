@@ -38,8 +38,8 @@ command:
     nameNotExist: "This name doesn't exist"
     teleport: "Teleporting ..."
   start:
-    alreadyInvest: "You currently have an invest, please do /invest stop to stop your invest"
-    done: "Invest started, please execute /invest join to be teleported to the invest zone"
+    alreadyInvest: "You currently have an invest, please execute /invest stop to stop your invest"
+    done: "Invest started, please execute /invest to be teleported to the invest zone"
     nameNotExist: "This name doesn't exist"
   stop:
     notInvest: "You don't have an invest"

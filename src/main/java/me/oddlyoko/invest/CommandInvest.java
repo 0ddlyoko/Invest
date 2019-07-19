@@ -43,6 +43,15 @@ public class CommandInvest implements CommandExecutor {
 		if (!"invest".equalsIgnoreCase(command.getLabel()))
 			return false;
 		if (args.length == 0 || "help".equalsIgnoreCase(args[0])) {
+			if (args.length == 0 && sender instanceof Player
+					&& Invest.get().getInvestManager().hasInvest(((Player) sender))) {
+				Player p = (Player) sender;
+				PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
+				if (pi != null) {
+					p.teleport(pi.getInvestType().getSpawn());
+					return true;
+				}
+			}
 			// Help
 			sender.sendMessage(
 					ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW + "]-----------");
