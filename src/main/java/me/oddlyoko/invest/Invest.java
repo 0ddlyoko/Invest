@@ -48,6 +48,7 @@ public class Invest extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
+			saveDefaultConfig();
 			log.info("Loading plugin Invest");
 			invest = this;
 			log.info("Loading ConfigManager");

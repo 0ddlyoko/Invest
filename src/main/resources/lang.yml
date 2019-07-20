@@ -18,7 +18,7 @@ command:
     investprice: "Please enter a valid invest price that is gretter or equals to 1"
     investearned: "Please enter a valid invest earned that is gretter or equals to 1"
     globalZone: "Warning: using __global__ as zone means the player will always be in invest mode in this world"
-    error: "An error has occured while deleting invest"
+    error: "An error has occured while creating invest: World or Region not found"
     done: "Invest created"
   delete:
     nameNotExist: "This name doesn't exist"
@@ -48,3 +48,4 @@ command:
 error: "An error has occured, please contact your administrator to fix it"
 end: "Your investment is complete, you got %s$"
 aboveBar: "Time left: %hour%H %min%M %sec%S"
+notInvest: "It seams you don't have an invest, please execute /invest start <invest> to start an invest"

@@ -30,8 +30,20 @@ import java.io.File;
  */
 public class ConfigManager {
 	private Config config;
+	private String commandInvest;
+	private boolean showInGlobal;
 
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
+		commandInvest = config.getString("commandInvest");
+		showInGlobal = config.getBoolean("showInGlobal");
+	}
+
+	public String getCommandInvest() {
+		return commandInvest;
+	}
+
+	public boolean isShowInGlobal() {
+		return showInGlobal;
 	}
 }

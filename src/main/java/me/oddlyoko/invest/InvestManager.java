@@ -140,6 +140,18 @@ public class InvestManager {
 						}
 					}
 				}
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (players.containsKey(p.getUniqueId()))
+						continue;
+					for (InvestType it : invests.values()) {
+						if ("__global__".equalsIgnoreCase(it.getWorldguardZone()) && !Invest.get().getConfigManager().isShowInGlobal())
+							continue;
+						if (it.isInside(p.getLocation())) {
+							p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(L.get("notInvest")));
+							break;
+						}
+					}
+				}
 			}
 			log.info("Exiting loop");
 		});
@@ -323,7 +335,7 @@ public class InvestManager {
 		synchronized (sync) {
 			invests.put(name, inv);
 			if (!Invest.get().getWorldGuardManager().loadRegion(inv)) {
-				log.error("An error has occured while loading region for invest " + name);
+				log.error("An error has occured while loading region for invest {}", name);
 				invests.remove(name);
 				return false;
 			}

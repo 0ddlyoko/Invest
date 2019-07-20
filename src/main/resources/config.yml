@@ -1,0 +1,5 @@
+# Command executed while entering /invest and the player doesn't have an invest
+# Let empty to not execute commands
+commandInvest: 
+# Show the "notInvest" message even if an invest has a __global__ region
+showInGlobal: true
