@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,11 +117,19 @@ public class InvestManager {
 						// End
 						stopInvest(pi.getUUID());
 						Player p = Bukkit.getPlayer(pi.getUUID());
-						if (p != null)
+						OfflinePlayer op = (p != null) ? p : Bukkit.getOfflinePlayer(pi.getUUID());
+						if (p != null) {
 							p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
 									Integer.toString(pi.getInvestType().getInvestEarned())));
+						}
 						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
 								pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
+						if (!Invest.get().getVaultManager().add(op, pi.getInvestType().getInvestEarned())) {
+							if (p != null)
+								p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("error"));
+							log.error("Investisment of uuid {} is ended, but got error, please give him {}$ manually",
+									pi.getUUID(), pi.getInvestType().getInvestEarned());
+						}
 					}
 				}
 			}
@@ -202,7 +211,7 @@ public class InvestManager {
 					"InvestType is null or time is empty, please check if player.yml file hasn't been corrompted (or edited manually) for this player");
 			log.error("uuid = {}, type = {}, investType = {}, time = {}", uuid, type,
 					investType == null ? "null" : investType.getName(), time);
-			p.sendMessage(__.PREFIX + ChatColor.RED + L.get("errorLoading"));
+			p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
 			Invest.get().getPlayerManager().delete(uuid);
 			return;
 		}

@@ -41,8 +41,9 @@ command:
     alreadyInvest: "You currently have an invest, please execute /invest stop to stop your invest"
     done: "Invest started, please execute /invest to be teleported to the invest zone"
     nameNotExist: "This name doesn't exist"
+    notMoney: "You don't have enough money"
   stop:
     notInvest: "You don't have an invest"
     done: "Invest stopped"
-errorLoading: "An error has occured, please contact your administrator to fix it"
+error: "An error has occured, please contact your administrator to fix it"
 end: "Your investment is complete, you got %s$"

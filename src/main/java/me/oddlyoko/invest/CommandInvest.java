@@ -263,6 +263,14 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.nameNotExist"));
 				return true;
 			}
+			if (!Invest.get().getVaultManager().hasMoney(p, inv.getInvestPrice())) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.notMoney"));
+				return true;
+			}
+			if (!Invest.get().getVaultManager().remove(p, inv.getInvestPrice())) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
+				return true;
+			}
 			Invest.get().getInvestManager().startInvest(p, inv);
 			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.start.done"));
 		} else if ("stop".equalsIgnoreCase(args[0])) {

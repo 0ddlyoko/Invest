@@ -43,8 +43,7 @@ public class Invest extends JavaPlugin {
 	private InvestManager investManager;
 	private WorldGuardManager worldGuardManager;
 	private PlayerManager playerManager;
-
-	boolean end = false;
+	private VaultManager vaultManager;
 
 	@Override
 	public void onEnable() {
@@ -90,10 +89,14 @@ public class Invest extends JavaPlugin {
 			log.info("Loading Players");
 			investManager.loadPlayers();
 			log.info("done");
+			log.info("Loading VaultManager");
+			vaultManager = new VaultManager();
+			vaultManager.init();
+			log.info("done");
 			investManager.startScheduler();
 			log.info("Plugin enabled");
 		} catch (Exception ex) {
-			log.error("An error has occured while loading Invest");
+			log.error("An error has occured while loading Invest", ex);
 			Bukkit.getPluginManager().disablePlugin(this);
 			setEnabled(false);
 		}
@@ -101,7 +104,6 @@ public class Invest extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		end = true;
 		if (investManager != null) {
 			for (Player p : Bukkit.getOnlinePlayers())
 				investManager.unloadPlayer(p);
@@ -124,6 +126,10 @@ public class Invest extends JavaPlugin {
 
 	public PlayerManager getPlayerManager() {
 		return playerManager;
+	}
+
+	public VaultManager getVaultManager() {
+		return vaultManager;
 	}
 
 	public static Invest get() {
