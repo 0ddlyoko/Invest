@@ -92,7 +92,7 @@ public class Config {
 	 */
 	public String getString(String path) {
 		String name = fconfig.getString(path);
-		return name == null ? null : name.replace("&", "�");
+		return name == null ? null : name.replace("&", "§");
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class Config {
 	public List<String> getStringList(String path) {
 		List<String> name = new ArrayList<>();
 		for (String nom : fconfig.getStringList(path)) {
-			name.add(nom.replace("&", "�"));
+			name.add(nom.replace("&", "§"));
 		}
 		return name;
 	}
