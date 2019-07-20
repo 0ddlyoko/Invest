@@ -22,3 +22,6 @@ permissions:
   invest.tp:
     default: op
     description: Teleport to the spawn of an invest
+  invest.players:
+    default: op
+    description: List all players that are in their invest zone

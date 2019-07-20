@@ -121,12 +121,17 @@ public class InvestManager {
 					int hour = totalSec / 3600;
 					int min = totalSec / 60;
 					int sec = totalSec % 60;
+					int price = pi.getInvestType().getInvestPrice();
+					int earn = pi.getInvestType().getInvestEarned();
 					p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-							TextComponent
-									.fromLegacyText(ChatColor.GREEN + msg.replaceAll("%hour%", Integer.toString(hour))
-											.replaceAll("%min%", Integer.toString(min))
-											.replaceAll("%sec%", Integer.toString(sec))
-											.replaceAll("%totalsec%", Integer.toString(totalSec))));
+							TextComponent.fromLegacyText(ChatColor.GREEN + msg.replaceAll("%player%", p.getName())
+									.replaceAll("%displayName%", p.getDisplayName())
+									.replaceAll("%hour%", Integer.toString(hour))
+									.replaceAll("%min%", Integer.toString(min))
+									.replaceAll("%sec%", Integer.toString(sec))
+									.replaceAll("%totalsec%", Integer.toString(totalSec))
+									.replaceAll("%price%", Integer.toString(price))
+									.replaceAll("%earn%", Integer.toString(earn))));
 					if (pi.getTime() <= 0) {
 						// End
 						stopInvest(pi.getUUID());
@@ -313,6 +318,10 @@ public class InvestManager {
 		Invest.get().getPlayerManager().delete(uuid);
 		// Simulate a player move
 		exitZone(uuid, playerInside.get(uuid));
+	}
+
+	public Collection<PlayerInvest> getPlayersInside() {
+		return playerInside.values();
 	}
 
 	// ------------------------------------------------------------------------------
