@@ -16,7 +16,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,8 @@ import com.google.gson.stream.JsonReader;
 
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerInvest;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * MIT License
@@ -104,6 +105,7 @@ public class InvestManager {
 		// I use Thread instance of BukkitRunnable for one reason: If the server tps is
 		// low this method will anyways be executed each seconds
 		Thread t = new Thread(() -> {
+			String msg = L.get("aboveBar");
 			log.info("Entering loop");
 			while (run && !Thread.interrupted()) {
 				try {
@@ -113,20 +115,26 @@ public class InvestManager {
 				}
 				for (PlayerInvest pi : playerInside.values()) {
 					pi.cooldown();
+					Player p = Bukkit.getPlayer(pi.getUUID());
+					int totalSec = pi.getTime();
+					int hour = totalSec / 3600;
+					int min = totalSec / 60;
+					int sec = totalSec % 60;
+					p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+							TextComponent
+									.fromLegacyText(ChatColor.GREEN + msg.replaceAll("%hour%", Integer.toString(hour))
+											.replaceAll("%min%", Integer.toString(min))
+											.replaceAll("%sec%", Integer.toString(sec))
+											.replaceAll("%totalsec%", Integer.toString(totalSec))));
 					if (pi.getTime() <= 0) {
 						// End
 						stopInvest(pi.getUUID());
-						Player p = Bukkit.getPlayer(pi.getUUID());
-						OfflinePlayer op = (p != null) ? p : Bukkit.getOfflinePlayer(pi.getUUID());
-						if (p != null) {
-							p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
-									Integer.toString(pi.getInvestType().getInvestEarned())));
-						}
+						p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
+								Integer.toString(pi.getInvestType().getInvestEarned())));
 						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
 								pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
-						if (!Invest.get().getVaultManager().add(op, pi.getInvestType().getInvestEarned())) {
-							if (p != null)
-								p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("error"));
+						if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestEarned())) {
+							p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("error"));
 							log.error("Investisment of uuid {} is ended, but got error, please give him {}$ manually",
 									pi.getUUID(), pi.getInvestType().getInvestEarned());
 						}

@@ -47,3 +47,4 @@ command:
     done: "Invest stopped"
 error: "An error has occured, please contact your administrator to fix it"
 end: "Your investment is complete, you got %s$"
+aboveBar: "Time left: %hour%H %min%M %sec%S"
