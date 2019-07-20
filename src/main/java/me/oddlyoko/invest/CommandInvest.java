@@ -231,8 +231,8 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			if (args.length != 2) {
-				sender.sendMessage(
-						Invest.prefix() + ChatColor.RED + L.get("command.syntaxerror").replaceAll("%s", "/invest tp <name>"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED
+						+ L.get("command.syntaxerror").replaceAll("%s", "/invest tp <name>"));
 				return true;
 			}
 			if (!(sender instanceof Player)) {
@@ -297,21 +297,6 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.stop.done"));
-		} else if ("get".equalsIgnoreCase(args[0])) {
-			// TODO REMOVE IT
-			if (!(sender instanceof Player)) {
-				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
-				return true;
-			}
-			Player p = (Player) sender;
-			if (!Invest.get().getInvestManager().hasInvest(p)) {
-				p.sendMessage(Invest.prefix() + ChatColor.RED + "You don't have an invest");
-				return true;
-			}
-			PlayerInvest inv = Invest.get().getInvestManager().getInvest(p);
-			p.sendMessage("- uuid = " + inv.getUUID());
-			p.sendMessage("- name = " + inv.getInvestType().getName());
-			p.sendMessage("- time = " + inv.getTime());
 		}
 		return true;
 	}
