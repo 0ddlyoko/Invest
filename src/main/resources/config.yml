@@ -3,3 +3,5 @@
 commandInvest: 
 # Show the "notInvest" message even if an invest has a __global__ region
 showInGlobal: true
+# Save all players each X seconds
+timeToSave: 1800

@@ -99,6 +99,7 @@ public class InvestManager {
 	// ------------------------------------------------------------------------------
 
 	private boolean run = false;
+	private int seconds = 0;
 
 	public void startScheduler() {
 		run = true;
@@ -140,11 +141,19 @@ public class InvestManager {
 						}
 					}
 				}
+				seconds++;
+				// Save
+				if (seconds % Invest.get().getConfigManager().getTimeToSave() == 0) {
+					log.info("Saving players ...");
+					for (Player p : Bukkit.getOnlinePlayers())
+						savePlayer(p);
+				}
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (players.containsKey(p.getUniqueId()))
 						continue;
 					for (InvestType it : invests.values()) {
-						if ("__global__".equalsIgnoreCase(it.getWorldguardZone()) && !Invest.get().getConfigManager().isShowInGlobal())
+						if ("__global__".equalsIgnoreCase(it.getWorldguardZone())
+								&& !Invest.get().getConfigManager().isShowInGlobal())
 							continue;
 						if (it.isInside(p.getLocation())) {
 							p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(L.get("notInvest")));
