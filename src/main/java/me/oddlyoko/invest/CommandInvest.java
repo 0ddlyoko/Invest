@@ -94,13 +94,13 @@ public class CommandInvest implements CommandExecutor {
 				sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
 			} else {
 				if (!sender.hasPermission("invest.info")) {
-					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+					sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 					return true;
 				}
 				String name = args[1];
 				InvestType inv = Invest.get().getInvestManager().get(name);
 				if (inv == null) {
-					sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.info.nameNotExist"));
+					sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.info.nameNotExist"));
 					return true;
 				}
 				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
@@ -126,16 +126,16 @@ public class CommandInvest implements CommandExecutor {
 			}
 		} else if ("create".equalsIgnoreCase(args[0]) || "add".equalsIgnoreCase(args[0])) {
 			if (!sender.hasPermission("invest.create")) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 				return true;
 			}
 			if (args.length != 6) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replace("%s",
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.syntaxerror").replace("%s",
 						"/invest create <name> <time-to-stay> <invest-price> <invest-earned> <worldguard-zone>"));
 				return true;
 			}
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
 				return true;
 			}
 			Player p = (Player) sender;
@@ -146,77 +146,77 @@ public class CommandInvest implements CommandExecutor {
 			String worldguardZone = args[5];
 			// TODO Check if name already exists
 			if (Invest.get().getInvestManager().exist(name)) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.nameExist"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.nameExist"));
 				return true;
 			}
 			// Invalid time
 			try {
 				timeToStay = Integer.parseInt(args[2]);
 			} catch (NumberFormatException ex) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.timetostay"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.timetostay"));
 				return true;
 			}
 			if (timeToStay < 1) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.timetostay"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.timetostay"));
 				return true;
 			}
 			// Invalid price
 			try {
 				investPrice = Integer.parseInt(args[3]);
 			} catch (NumberFormatException ex) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investprice"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.investprice"));
 				return true;
 			}
 			if (investPrice < 1) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investprice"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.investprice"));
 				return true;
 			}
 			// Invalid earned
 			try {
 				investEarned = Integer.parseInt(args[4]);
 			} catch (NumberFormatException ex) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investearned"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.investearned"));
 				return true;
 			}
 			if (investEarned < 1) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.investearned"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.investearned"));
 				return true;
 			}
 			if ("__global__".equalsIgnoreCase(worldguardZone))
-				p.sendMessage(__.PREFIX + ChatColor.YELLOW + L.get("command.create.globalZone"));
+				p.sendMessage(Invest.prefix() + ChatColor.YELLOW + L.get("command.create.globalZone"));
 			Location spawn = p.getLocation();
 			if (!Invest.get().getInvestManager().createInvest(name, timeToStay, investPrice, investEarned,
 					worldguardZone, spawn)) {
 				// Error
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.create.error"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.error"));
 				return true;
 			}
-			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.create.done"));
+			sender.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.create.done"));
 		} else if ("delete".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) {
 			if (!sender.hasPermission("invest.delete")) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 				return true;
 			}
 			if (args.length != 2) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED
+				sender.sendMessage(Invest.prefix() + ChatColor.RED
 						+ L.get("command.syntaxerror").replaceAll("%s", "/invest delete <name>"));
 				return true;
 			}
 			String name = args[1];
 			if (!Invest.get().getInvestManager().exist(name)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.delete.nameNotExist"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.delete.nameNotExist"));
 				return true;
 			}
 			// Delete
 			if (!Invest.get().getInvestManager().deleteInvest(name)) {
 				// Error
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.delete.error"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.delete.error"));
 				return true;
 			}
-			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.delete.done"));
+			sender.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.delete.done"));
 		} else if ("list".equalsIgnoreCase(args[0])) {
 			if (!sender.hasPermission("invest.list")) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 				return true;
 			}
 			sender.sendMessage(
@@ -227,85 +227,85 @@ public class CommandInvest implements CommandExecutor {
 					Integer.toString(Invest.get().getInvestManager().count())));
 		} else if ("tp".equalsIgnoreCase(args[0])) {
 			if (!sender.hasPermission("invest.tp")) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.noperm"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 				return true;
 			}
 			if (args.length != 2) {
 				sender.sendMessage(
-						__.PREFIX + ChatColor.RED + L.get("command.syntaxerror").replaceAll("%s", "/invest tp <name>"));
+						Invest.prefix() + ChatColor.RED + L.get("command.syntaxerror").replaceAll("%s", "/invest tp <name>"));
 				return true;
 			}
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
 				return true;
 			}
 			Player p = (Player) sender;
 			String name = args[1];
 			InvestType inv = Invest.get().getInvestManager().get(name);
 			if (inv == null) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.tp.nameNotExist"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.tp.nameNotExist"));
 				return true;
 			}
-			sender.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.tp.teleport"));
+			sender.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.tp.teleport"));
 			p.teleport(inv.getSpawn());
 		} else if ("start".equalsIgnoreCase(args[0])) {
 			if (args.length != 2) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED
+				sender.sendMessage(Invest.prefix() + ChatColor.RED
 						+ L.get("command.syntaxerror").replaceAll("%s", "/invest start <name>"));
 				return true;
 			}
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
 				return true;
 			}
 			Player p = (Player) sender;
 			if (Invest.get().getInvestManager().hasInvest(p)) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.alreadyInvest"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.start.alreadyInvest"));
 				return true;
 			}
 			String name = args[1];
 			InvestType inv = Invest.get().getInvestManager().get(name);
 			if (inv == null) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.nameNotExist"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.start.nameNotExist"));
 				return true;
 			}
 			if (!Invest.get().getVaultManager().hasMoney(p, inv.getInvestPrice())) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.start.notMoney"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.start.notMoney"));
 				return true;
 			}
 			if (!Invest.get().getVaultManager().remove(p, inv.getInvestPrice())) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("error"));
 				return true;
 			}
 			Invest.get().getInvestManager().startInvest(p, inv);
-			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.start.done"));
+			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.start.done"));
 		} else if ("stop".equalsIgnoreCase(args[0])) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
 				return true;
 			}
 			Player p = (Player) sender;
 			if (!Invest.get().getInvestManager().hasInvest(p)) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.stop.notInvest"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.stop.notInvest"));
 				return true;
 			}
 			PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
 			Invest.get().getInvestManager().stopInvest(p.getUniqueId());
 			double refund = Invest.get().getConfigManager().getRefund();
 			if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0)) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
+				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("error"));
 				return true;
 			}
-			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.stop.done"));
+			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.stop.done"));
 		} else if ("get".equalsIgnoreCase(args[0])) {
 			// TODO REMOVE IT
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.nothuman"));
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
 				return true;
 			}
 			Player p = (Player) sender;
 			if (!Invest.get().getInvestManager().hasInvest(p)) {
-				p.sendMessage(__.PREFIX + ChatColor.RED + "You don't have an invest");
+				p.sendMessage(Invest.prefix() + ChatColor.RED + "You don't have an invest");
 				return true;
 			}
 			PlayerInvest inv = Invest.get().getInvestManager().getInvest(p);

@@ -133,12 +133,12 @@ public class InvestManager {
 						for (String cmd : Invest.get().getConfigManager().getCommandEnd())
 							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 									cmd.replace("%player%", p.getName()).replace("%displayName%", p.getDisplayName()));
-						p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
+						p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("end").replaceAll("%s",
 								Integer.toString(pi.getInvestType().getInvestEarned())));
 						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
 								pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
 						if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestEarned())) {
-							p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("error"));
+							p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("error"));
 							log.error("Investisment of uuid {} is ended, but got error, please give him {}$ manually",
 									pi.getUUID(), pi.getInvestType().getInvestEarned());
 						}
@@ -243,7 +243,7 @@ public class InvestManager {
 					"InvestType is null or time is empty, please check if player.yml file hasn't been corrompted (or edited manually) for this player");
 			log.error("uuid = {}, type = {}, investType = {}, time = {}", uuid, type,
 					investType == null ? "null" : investType.getName(), time);
-			p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
+			p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("error"));
 			Invest.get().getPlayerManager().delete(uuid);
 			return;
 		}

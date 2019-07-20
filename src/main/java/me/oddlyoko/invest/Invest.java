@@ -38,6 +38,7 @@ import me.oddlyoko.invest.config.PlayerManager;
  */
 public class Invest extends JavaPlugin {
 	private static Invest invest;
+	private static String prefix;
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ConfigManager configManager;
 	private InvestManager investManager;
@@ -54,6 +55,9 @@ public class Invest extends JavaPlugin {
 			log.info("Loading ConfigManager");
 			configManager = new ConfigManager();
 			log.info("done");
+			prefix = (configManager.getPrefix() != null && !"".equalsIgnoreCase(configManager.getPrefix().trim()))
+					? configManager.getPrefix()
+					: __.PREFIX;
 			log.info("Loading Languages");
 			L.init();
 			log.info("done");
@@ -135,5 +139,9 @@ public class Invest extends JavaPlugin {
 
 	public static Invest get() {
 		return invest;
+	}
+
+	public static String prefix() {
+		return prefix;
 	}
 }

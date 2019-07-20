@@ -13,3 +13,5 @@ commands-end:
 - test2
 - say Le joueur %player% vient de terminer blabla
 - say %displayName%
+# Prefix. Let empty to use default prefix
+prefix: 

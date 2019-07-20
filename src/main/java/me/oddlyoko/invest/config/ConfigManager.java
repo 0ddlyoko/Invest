@@ -36,6 +36,7 @@ public class ConfigManager {
 	private int timeToSave;
 	private int refund;
 	private List<String> commandEnd;
+	private String prefix;
 
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
@@ -44,6 +45,7 @@ public class ConfigManager {
 		timeToSave = config.getInt("timeToSave");
 		refund = config.getInt("refund-percent");
 		commandEnd = config.getStringList("commands-end");
+		prefix = config.getString("prefix");
 	}
 
 	public String getCommandInvest() {
@@ -64,5 +66,9 @@ public class ConfigManager {
 
 	public List<String> getCommandEnd() {
 		return commandEnd;
+	}
+
+	public String getPrefix() {
+		return prefix;
 	}
 }
