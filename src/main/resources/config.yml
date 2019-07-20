@@ -5,3 +5,5 @@ commandInvest:
 showInGlobal: true
 # Save all players each X seconds
 timeToSave: 1800
+# Refund player when he stops his invest (in percent)
+refund-percent: 50

@@ -289,7 +289,13 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("command.stop.notInvest"));
 				return true;
 			}
+			PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
 			Invest.get().getInvestManager().stopInvest(p.getUniqueId());
+			double refund = Invest.get().getConfigManager().getRefund();
+			if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0)) {
+				p.sendMessage(__.PREFIX + ChatColor.RED + L.get("error"));
+				return true;
+			}
 			p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("command.stop.done"));
 		} else if ("get".equalsIgnoreCase(args[0])) {
 			// TODO REMOVE IT

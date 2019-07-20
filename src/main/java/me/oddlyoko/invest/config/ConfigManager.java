@@ -33,12 +33,14 @@ public class ConfigManager {
 	private String commandInvest;
 	private boolean showInGlobal;
 	private int timeToSave;
+	private int refund;
 
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
 		commandInvest = config.getString("commandInvest");
 		showInGlobal = config.getBoolean("showInGlobal");
 		timeToSave = config.getInt("timeToSave");
+		refund = config.getInt("refund-percent");
 	}
 
 	public String getCommandInvest() {
@@ -51,5 +53,9 @@ public class ConfigManager {
 
 	public int getTimeToSave() {
 		return timeToSave;
+	}
+
+	public int getRefund() {
+		return refund;
 	}
 }
