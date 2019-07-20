@@ -1,0 +1,24 @@
+name: Invest
+main: me.oddlyoko.invest.Invest
+version: 1.0
+author: 0ddlyoko
+depend: [WorldGuard, Vault]
+commands:
+  invest:
+    description: Help Invest
+permissions:
+  invest.create:
+    default: op
+    description: Create a new invest
+  invest.delete:
+    default: op
+    description: Delete an existing invest
+  invest.list:
+    default: op
+    description: List all invests
+  invest.info:
+    default: op
+    description: Show informations about an invest
+  invest.tp:
+    default: op
+    description: Teleport to the spawn of an invest

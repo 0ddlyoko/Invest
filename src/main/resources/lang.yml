@@ -1,0 +1,51 @@
+command:
+  syntaxerror: "Syntax error: %s"
+  nothuman: "Sorry but you must be a player to execute this command"
+  noperm: "You don't have permission to execute this command"
+  help:
+    create: "Create a new invest"
+    delete: "Delete an existing invest"
+    list: "List all invests"
+    info: "More information about the creator of the plugin"
+    infoInvest: "Show informations about an invest"
+    tp: "Teleport to the spawn of an invest"
+    start: "Start an invest"
+    stop: "Stop current invest"
+    help: "Show this page"
+  create:
+    nameExist: "This name already exists"
+    timetostay: "Please enter a valid time to stay that is gretter or equals to 1"
+    investprice: "Please enter a valid invest price that is gretter or equals to 1"
+    investearned: "Please enter a valid invest earned that is gretter or equals to 1"
+    globalZone: "Warning: using __global__ as zone means the player will always be in invest mode in this world"
+    error: "An error has occured while creating invest: World or Region not found"
+    done: "Invest created"
+  delete:
+    nameNotExist: "This name doesn't exist"
+    error: "An error has occured while deleting invest"
+    done: "Invest deleted"
+  list:
+    count: "Total: %s"
+  info:
+    nameNotExist: "This name doesn't exist"
+    name: "Name"
+    timeToStay: "Time to Stay"
+    investPrice: "Invest Price"
+    investEarned: "Invest Earned"
+    worldguardZone: "WorldGuard Zone"
+    spawn: "Spawn"
+  tp:
+    nameNotExist: "This name doesn't exist"
+    teleport: "Teleporting ..."
+  start:
+    alreadyInvest: "You currently have an invest, please execute /invest stop to stop your invest"
+    done: "Invest started, please execute /invest to be teleported to the invest zone"
+    nameNotExist: "This name doesn't exist"
+    notMoney: "You don't have enough money"
+  stop:
+    notInvest: "You don't have an invest"
+    done: "Invest stopped"
+error: "An error has occured, please contact your administrator to fix it"
+end: "Your investment is complete, you got %s$"
+aboveBar: "Time left: %hour%H %min%M %sec%S"
+notInvest: "It seams you don't have an invest, please execute /invest start <invest> to start an invest"
