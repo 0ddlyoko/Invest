@@ -7,3 +7,9 @@ showInGlobal: true
 timeToSave: 1800
 # Refund player when he stops his invest (in percent)
 refund-percent: 50
+# Command executed when a player end his invest
+commands-end:
+- test
+- test2
+- say Le joueur %player% vient de terminer blabla
+- say %displayName%

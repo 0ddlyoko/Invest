@@ -130,6 +130,9 @@ public class InvestManager {
 					if (pi.getTime() <= 0) {
 						// End
 						stopInvest(pi.getUUID());
+						for (String cmd : Invest.get().getConfigManager().getCommandEnd())
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+									cmd.replace("%player%", p.getName()).replace("%displayName%", p.getDisplayName()));
 						p.sendMessage(__.PREFIX + ChatColor.GREEN + L.get("end").replaceAll("%s",
 								Integer.toString(pi.getInvestType().getInvestEarned())));
 						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),

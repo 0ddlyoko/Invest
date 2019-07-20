@@ -4,6 +4,7 @@
 package me.oddlyoko.invest.config;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * MIT License
@@ -34,6 +35,7 @@ public class ConfigManager {
 	private boolean showInGlobal;
 	private int timeToSave;
 	private int refund;
+	private List<String> commandEnd;
 
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
@@ -41,6 +43,7 @@ public class ConfigManager {
 		showInGlobal = config.getBoolean("showInGlobal");
 		timeToSave = config.getInt("timeToSave");
 		refund = config.getInt("refund-percent");
+		commandEnd = config.getStringList("commands-end");
 	}
 
 	public String getCommandInvest() {
@@ -57,5 +60,9 @@ public class ConfigManager {
 
 	public int getRefund() {
 		return refund;
+	}
+
+	public List<String> getCommandEnd() {
+		return commandEnd;
 	}
 }
