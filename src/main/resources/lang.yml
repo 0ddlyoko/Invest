@@ -11,6 +11,7 @@ command:
     tp: "Teleport to the spawn of an invest"
     start: "Start an invest"
     stop: "Stop current invest"
+    players: "List all players that are in their invest zone"
     help: "Show this page"
   create:
     nameExist: "This name already exists"
@@ -45,6 +46,8 @@ command:
   stop:
     notInvest: "You don't have an invest"
     done: "Invest stopped"
+  players:
+    total: 'Number of players: %nbr%'
 error: "An error has occured, please contact your administrator to fix it"
 end: "Your investment is complete, you got %s$"
 aboveBar: "Time left: %hour%H %min%M %sec%S"

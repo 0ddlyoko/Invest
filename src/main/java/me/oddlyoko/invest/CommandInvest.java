@@ -3,6 +3,8 @@
  */
 package me.oddlyoko.invest;
 
+import java.util.Collection;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -85,6 +87,9 @@ public class CommandInvest implements CommandExecutor {
 					ChatColor.AQUA + "- /invest start <name>" + ChatColor.YELLOW + " : " + L.get("command.help.start"));
 			sender.sendMessage(
 					ChatColor.AQUA + "- /invest stop" + ChatColor.YELLOW + " : " + L.get("command.help.stop"));
+			if (sender.hasPermission("invest.players"))
+				sender.sendMessage(ChatColor.AQUA + "- /invest players" + ChatColor.YELLOW + " : "
+						+ L.get("command.help.players"));
 		} else if ("info".equalsIgnoreCase(args[0])) {
 			if (args.length == 1) {
 				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
@@ -278,7 +283,21 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			Invest.get().getInvestManager().startInvest(p, inv);
-			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.start.done"));
+			int totalSec = inv.getTimeToStay();
+			int hour = totalSec / 3600;
+			int min = totalSec / 60;
+			int sec = totalSec % 60;
+			int price = inv.getInvestPrice();
+			int earn = inv.getInvestEarned();
+			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.start.done")
+					.replaceAll("%player%", p.getName())
+					.replaceAll("%displayName%", p.getDisplayName())
+					.replaceAll("%hour%", Integer.toString(hour))
+					.replaceAll("%min%", Integer.toString(min))
+					.replaceAll("%sec%", Integer.toString(sec))
+					.replaceAll("%totalsec%", Integer.toString(totalSec))
+					.replaceAll("%price%", Integer.toString(price))
+					.replaceAll("%earn%", Integer.toString(earn)));
 		} else if ("stop".equalsIgnoreCase(args[0])) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
@@ -297,6 +316,14 @@ public class CommandInvest implements CommandExecutor {
 				return true;
 			}
 			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.stop.done"));
+		} else if ("players".equalsIgnoreCase(args[0])) {
+			if (!sender.hasPermission("invest.players")) {
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
+				return true;
+			}
+			Collection<PlayerInvest> playerInvests = Invest.get().getInvestManager().getPlayersInside();
+			sender.sendMessage(Invest.prefix() + ChatColor.GREEN
+					+ L.get("command.players.total").replaceAll("%nbr%", Integer.toString(playerInvests.size())));
 		}
 		return true;
 	}
