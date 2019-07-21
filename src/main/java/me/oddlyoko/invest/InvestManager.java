@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class InvestManager {
 	private Map<String, InvestType> invests;
 	// List of PlayerInvest (for connected players)
 	private Map<UUID, PlayerInvest> players;
-	// List of PlayerInvest for players that are inside their invest zone-
+	// List of PlayerInvest for players that are inside their invest zone
 	private Map<UUID, PlayerInvest> playerInside;
 	private Object sync = new Object();
 
@@ -114,39 +115,50 @@ public class InvestManager {
 				} catch (InterruptedException ex) {
 					log.error("InterruptedException !", ex);
 				}
-				for (PlayerInvest pi : playerInside.values()) {
-					pi.cooldown();
+				PlayerInvest[] playerInside = this.playerInside.values().toArray(new PlayerInvest[0]);
+				for (PlayerInvest pi : playerInside) {
 					Player p = Bukkit.getPlayer(pi.getUUID());
-					int totalSec = pi.getTime();
-					int hour = totalSec / 3600;
-					int min = (totalSec / 60) - (hour * 60);
-					int sec = totalSec % 60;
-					int price = pi.getInvestType().getInvestPrice();
-					int earn = pi.getInvestType().getInvestEarned();
-					p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-							TextComponent.fromLegacyText(ChatColor.GREEN + msg.replaceAll("%player%", p.getName())
-									.replaceAll("%displayName%", p.getDisplayName())
-									.replaceAll("%hour%", Integer.toString(hour))
-									.replaceAll("%min%", Integer.toString(min))
-									.replaceAll("%sec%", Integer.toString(sec))
-									.replaceAll("%totalsec%", Integer.toString(totalSec))
-									.replaceAll("%price%", Integer.toString(price))
-									.replaceAll("%earn%", Integer.toString(earn))));
-					if (pi.getTime() <= 0) {
-						// End
-						stopInvest(pi.getUUID());
-						for (String cmd : Invest.get().getConfigManager().getCommandEnd())
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-									cmd.replace("%player%", p.getName()).replace("%displayName%", p.getDisplayName()));
-						p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("end").replaceAll("%s",
-								Integer.toString(pi.getInvestType().getInvestEarned())));
-						log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
-								pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
-						if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestEarned())) {
-							p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("error"));
-							log.error("Investisment of uuid {} is ended, but got error, please give him {}$ manually",
-									pi.getUUID(), pi.getInvestType().getInvestEarned());
+					try {
+						pi.cooldown();
+						int totalSec = pi.getTime();
+						int hour = totalSec / 3600;
+						int min = (totalSec / 60) - (hour * 60);
+						int sec = totalSec % 60;
+						int price = pi.getInvestType().getInvestPrice();
+						int earn = pi.getInvestType().getInvestEarned();
+						p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+								TextComponent.fromLegacyText(ChatColor.GREEN + msg.replaceAll("%player%", p.getName())
+										.replaceAll("%displayName%", p.getDisplayName())
+										.replaceAll("%hour%", Integer.toString(hour))
+										.replaceAll("%min%", Integer.toString(min))
+										.replaceAll("%sec%", Integer.toString(sec))
+										.replaceAll("%totalsec%", Integer.toString(totalSec))
+										.replaceAll("%price%", Integer.toString(price))
+										.replaceAll("%earn%", Integer.toString(earn))));
+						if (pi.getTime() <= 0) {
+							// End
+							stopInvest(pi.getUUID());
+							List<String> cmds = Invest.get().getConfigManager().getCommandEnd();
+							Bukkit.getScheduler().runTask(Invest.get(), () -> {
+								for (String cmd : cmds)
+									Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+											cmd.replace("%player%", p.getName()).replace("%displayName%",
+													p.getDisplayName()));
+							});
+							p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("end").replaceAll("%s",
+									Integer.toString(pi.getInvestType().getInvestEarned())));
+							log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
+									pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
+							if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestEarned())) {
+								p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("error"));
+								log.error(
+										"Investisment of uuid {} is ended, but got error, please give him {}$ manually",
+										pi.getUUID(), pi.getInvestType().getInvestEarned());
+							}
 						}
+					} catch (Exception ex) {
+						log.error("An error has occured while cooldowning player {}", p.getName());
+						log.error("", ex);
 					}
 				}
 				seconds++;
