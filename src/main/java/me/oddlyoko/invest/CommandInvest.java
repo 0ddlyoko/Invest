@@ -290,7 +290,7 @@ public class CommandInvest implements CommandExecutor {
 			Invest.get().getInvestManager().startInvest(p, inv);
 			int totalSec = inv.getTimeToStay();
 			int hour = totalSec / 3600;
-			int min = (totalSec - hour) / 60;
+			int min = (totalSec / 60) - (hour * 60);
 			int sec = totalSec % 60;
 			int price = inv.getInvestPrice();
 			int earn = inv.getInvestEarned();
@@ -325,6 +325,20 @@ public class CommandInvest implements CommandExecutor {
 			Collection<PlayerInvest> playerInvests = Invest.get().getInvestManager().getPlayersInside();
 			sender.sendMessage(Invest.prefix() + ChatColor.GREEN
 					+ L.get("command.players.total").replaceAll("%nbr%", Integer.toString(playerInvests.size())));
+		} else if ("get".equalsIgnoreCase(args[0])) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
+				return true;
+			}
+			Player p = (Player) sender;
+			if (!Invest.get().getInvestManager().hasInvest(p)) {
+				p.sendMessage(Invest.prefix() + ChatColor.RED + "You don't have an invest");
+				return true;
+			}
+			PlayerInvest inv = Invest.get().getInvestManager().getInvest(p);
+			p.sendMessage("- uuid = " + inv.getUUID());
+			p.sendMessage("- name = " + inv.getInvestType().getName());
+			p.sendMessage("- time = " + inv.getTime());
 		}
 		return true;
 	}
