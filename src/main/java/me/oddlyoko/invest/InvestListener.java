@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
  * MIT License
@@ -50,6 +51,11 @@ public class InvestListener implements Listener {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
+		Invest.get().getInvestManager().playerMove(e.getPlayer());
+	}
+
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent e) {
 		Invest.get().getInvestManager().playerMove(e.getPlayer());
 	}
 }
