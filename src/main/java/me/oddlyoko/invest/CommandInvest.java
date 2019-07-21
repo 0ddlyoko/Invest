@@ -48,8 +48,13 @@ public class CommandInvest implements CommandExecutor {
 			if (args.length == 0 && sender instanceof Player) {
 				Player p = (Player) sender;
 				if (Invest.get().getInvestManager().hasInvest(((Player) sender))) {
-					PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
-					p.teleport(pi.getInvestType().getSpawn());
+					String cmd = Invest.get().getConfigManager().getCommandHaveInvest();
+					if (cmd != null && !"".equalsIgnoreCase(cmd.trim()))
+						p.chat((cmd.startsWith("/") ? "" : "/") + cmd);
+					else {
+						PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
+						p.teleport(pi.getInvestType().getSpawn());
+					}
 					return true;
 				} else {
 					String cmd = Invest.get().getConfigManager().getCommandInvest();
@@ -285,19 +290,15 @@ public class CommandInvest implements CommandExecutor {
 			Invest.get().getInvestManager().startInvest(p, inv);
 			int totalSec = inv.getTimeToStay();
 			int hour = totalSec / 3600;
-			int min = totalSec / 60;
+			int min = (totalSec / 60) - (hour * 60);
 			int sec = totalSec % 60;
 			int price = inv.getInvestPrice();
 			int earn = inv.getInvestEarned();
 			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.start.done")
-					.replaceAll("%player%", p.getName())
-					.replaceAll("%displayName%", p.getDisplayName())
-					.replaceAll("%hour%", Integer.toString(hour))
-					.replaceAll("%min%", Integer.toString(min))
-					.replaceAll("%sec%", Integer.toString(sec))
-					.replaceAll("%totalsec%", Integer.toString(totalSec))
-					.replaceAll("%price%", Integer.toString(price))
-					.replaceAll("%earn%", Integer.toString(earn)));
+					.replaceAll("%player%", p.getName()).replaceAll("%displayName%", p.getDisplayName())
+					.replaceAll("%hour%", Integer.toString(hour)).replaceAll("%min%", Integer.toString(min))
+					.replaceAll("%sec%", Integer.toString(sec)).replaceAll("%totalsec%", Integer.toString(totalSec))
+					.replaceAll("%price%", Integer.toString(price)).replaceAll("%earn%", Integer.toString(earn)));
 		} else if ("stop".equalsIgnoreCase(args[0])) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
@@ -324,6 +325,20 @@ public class CommandInvest implements CommandExecutor {
 			Collection<PlayerInvest> playerInvests = Invest.get().getInvestManager().getPlayersInside();
 			sender.sendMessage(Invest.prefix() + ChatColor.GREEN
 					+ L.get("command.players.total").replaceAll("%nbr%", Integer.toString(playerInvests.size())));
+		} else if ("get".equalsIgnoreCase(args[0])) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
+				return true;
+			}
+			Player p = (Player) sender;
+			if (!Invest.get().getInvestManager().hasInvest(p)) {
+				p.sendMessage(Invest.prefix() + ChatColor.RED + "You don't have an invest");
+				return true;
+			}
+			PlayerInvest inv = Invest.get().getInvestManager().getInvest(p);
+			p.sendMessage("- uuid = " + inv.getUUID());
+			p.sendMessage("- name = " + inv.getInvestType().getName());
+			p.sendMessage("- time = " + inv.getTime());
 		}
 		return true;
 	}
