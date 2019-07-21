@@ -32,6 +32,7 @@ import java.util.List;
 public class ConfigManager {
 	private Config config;
 	private String commandInvest;
+	private String commandHaveInvest;
 	private boolean showInGlobal;
 	private int timeToSave;
 	private int refund;
@@ -41,6 +42,7 @@ public class ConfigManager {
 	public ConfigManager() {
 		config = new Config(new File("plugins" + File.separator + "Invest" + File.separator + "config.yml"));
 		commandInvest = config.getString("commandInvest");
+		commandHaveInvest = config.getString("commandHaveInvest");
 		showInGlobal = config.getBoolean("showInGlobal");
 		timeToSave = config.getInt("timeToSave");
 		refund = config.getInt("refund-percent");
@@ -50,6 +52,10 @@ public class ConfigManager {
 
 	public String getCommandInvest() {
 		return commandInvest;
+	}
+
+	public String getCommandHaveInvest() {
+		return commandHaveInvest;
 	}
 
 	public boolean isShowInGlobal() {

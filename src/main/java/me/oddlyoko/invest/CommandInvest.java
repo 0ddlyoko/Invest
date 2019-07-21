@@ -48,8 +48,13 @@ public class CommandInvest implements CommandExecutor {
 			if (args.length == 0 && sender instanceof Player) {
 				Player p = (Player) sender;
 				if (Invest.get().getInvestManager().hasInvest(((Player) sender))) {
-					PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
-					p.teleport(pi.getInvestType().getSpawn());
+					String cmd = Invest.get().getConfigManager().getCommandHaveInvest();
+					if (cmd != null && !"".equalsIgnoreCase(cmd.trim()))
+						p.chat((cmd.startsWith("/") ? "" : "/") + cmd);
+					else {
+						PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
+						p.teleport(pi.getInvestType().getSpawn());
+					}
 					return true;
 				} else {
 					String cmd = Invest.get().getConfigManager().getCommandInvest();

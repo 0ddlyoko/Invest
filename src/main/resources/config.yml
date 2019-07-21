@@ -1,6 +1,9 @@
-# Command executed while entering /invest and the player doesn't have an invest
+# Command executed when entering /invest and the player doesn't have an invest
 # Let empty to not execute commands
 commandInvest: 
+# Command executed when entering /invest and the player has an invest
+# Let empty to teleport to zone
+commandHaveInvest: 
 # Show the "notInvest" message even if an invest has a __global__ region
 showInGlobal: true
 # Save all players each X seconds
