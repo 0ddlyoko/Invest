@@ -285,19 +285,15 @@ public class CommandInvest implements CommandExecutor {
 			Invest.get().getInvestManager().startInvest(p, inv);
 			int totalSec = inv.getTimeToStay();
 			int hour = totalSec / 3600;
-			int min = totalSec / 60;
+			int min = (totalSec - hour) / 60;
 			int sec = totalSec % 60;
 			int price = inv.getInvestPrice();
 			int earn = inv.getInvestEarned();
 			p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.start.done")
-					.replaceAll("%player%", p.getName())
-					.replaceAll("%displayName%", p.getDisplayName())
-					.replaceAll("%hour%", Integer.toString(hour))
-					.replaceAll("%min%", Integer.toString(min))
-					.replaceAll("%sec%", Integer.toString(sec))
-					.replaceAll("%totalsec%", Integer.toString(totalSec))
-					.replaceAll("%price%", Integer.toString(price))
-					.replaceAll("%earn%", Integer.toString(earn)));
+					.replaceAll("%player%", p.getName()).replaceAll("%displayName%", p.getDisplayName())
+					.replaceAll("%hour%", Integer.toString(hour)).replaceAll("%min%", Integer.toString(min))
+					.replaceAll("%sec%", Integer.toString(sec)).replaceAll("%totalsec%", Integer.toString(totalSec))
+					.replaceAll("%price%", Integer.toString(price)).replaceAll("%earn%", Integer.toString(earn)));
 		} else if ("stop".equalsIgnoreCase(args[0])) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));

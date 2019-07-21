@@ -119,7 +119,7 @@ public class InvestManager {
 					Player p = Bukkit.getPlayer(pi.getUUID());
 					int totalSec = pi.getTime();
 					int hour = totalSec / 3600;
-					int min = totalSec / 60;
+					int min = (totalSec - hour) / 60;
 					int sec = totalSec % 60;
 					int price = pi.getInvestType().getInvestPrice();
 					int earn = pi.getInvestType().getInvestEarned();
