@@ -36,6 +36,8 @@ public class ConfigManager {
 	private boolean showInGlobal;
 	private int timeToSave;
 	private int refund;
+	private boolean vanish;
+	private boolean vanishGlobal;
 	private List<String> commandEnd;
 	private String prefix;
 
@@ -46,6 +48,8 @@ public class ConfigManager {
 		showInGlobal = config.getBoolean("showInGlobal");
 		timeToSave = config.getInt("timeToSave");
 		refund = config.getInt("refund-percent");
+		vanish = config.getBoolean("vanish");
+		vanishGlobal = config.getBoolean("vanish-global");
 		commandEnd = config.getStringList("commands-end");
 		prefix = config.getString("prefix");
 	}
@@ -68,6 +72,14 @@ public class ConfigManager {
 
 	public int getRefund() {
 		return refund;
+	}
+
+	public boolean isVanish() {
+		return vanish;
+	}
+
+	public boolean isVanishGlobal() {
+		return vanishGlobal;
 	}
 
 	public List<String> getCommandEnd() {

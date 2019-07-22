@@ -108,6 +108,8 @@ public class InvestManager {
 		// low this method will anyways be executed each seconds
 		Thread t = new Thread(() -> {
 			String msg = L.get("aboveBar");
+			boolean isVanish = Invest.get().getConfigManager().isVanish();
+			boolean isGlobalVanish = Invest.get().getConfigManager().isVanishGlobal();
 			log.info("Entering loop");
 			while (run && !Thread.interrupted()) {
 				try {
@@ -168,18 +170,36 @@ public class InvestManager {
 					for (Player p : Bukkit.getOnlinePlayers())
 						savePlayer(p);
 				}
+				// Vanish
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (players.containsKey(p.getUniqueId()))
-						continue;
+					boolean isInsideNotGlobalZone = false;
+					boolean isInsideGlobalZone = false;
 					for (InvestType it : invests.values()) {
-						if ("__global__".equalsIgnoreCase(it.getWorldguardZone())
-								&& !Invest.get().getConfigManager().isShowInGlobal())
-							continue;
 						if (it.isInside(p.getLocation())) {
+							if (!"__global__".equalsIgnoreCase(it.getWorldguardZone()))
+								isInsideNotGlobalZone = true;
+							else {
+								isInsideGlobalZone = true;
+								if (!Invest.get().getConfigManager().isShowInGlobal())
+									continue;
+							}
+							if (players.containsKey(p.getUniqueId()))
+								continue;
 							p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(L.get("notInvest")));
 							break;
 						}
 					}
+					boolean vanish = (isInsideNotGlobalZone && isVanish) || (isInsideGlobalZone && isGlobalVanish);
+					Bukkit.getScheduler().runTask(Invest.get(), () -> {
+						// Hide players
+						for (Player p2 : Bukkit.getOnlinePlayers())
+							if (p.getUniqueId() != p2.getUniqueId()) {
+								if (vanish)
+									p2.hidePlayer(Invest.get(), p);
+								else
+									p2.showPlayer(Invest.get(), p);
+							}
+					});
 				}
 			}
 			log.info("Exiting loop");
