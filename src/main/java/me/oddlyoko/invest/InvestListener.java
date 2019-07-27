@@ -7,9 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
  * MIT License
@@ -40,22 +38,11 @@ public class InvestListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		Invest.get().getInvestManager().loadPlayer(p);
-		Invest.get().getInvestManager().playerMove(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 		Invest.get().getInvestManager().unloadPlayer(p);
-	}
-
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		Invest.get().getInvestManager().playerMove(e.getPlayer());
-	}
-
-	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		Invest.get().getInvestManager().playerMove(e.getPlayer());
 	}
 }
