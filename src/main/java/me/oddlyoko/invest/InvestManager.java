@@ -60,8 +60,9 @@ public class InvestManager {
 	// List of PlayerInvest (for connected players)
 	private Map<UUID, PlayerInvest> players;
 	// List of PlayerInvest for players that are inside their invest zone
-	private Map<UUID, PlayerInvest> playerInside;
 	private Object sync = new Object();
+	// Number of players inside their zone
+	private int nbrPlayerInside = 0;
 
 	public InvestManager() throws Exception {
 		// Load from config file
@@ -78,7 +79,6 @@ public class InvestManager {
 		}
 		invests = new HashMap<>();
 		players = new HashMap<>();
-		playerInside = new HashMap<>();
 		loadFromFile();
 	}
 
@@ -117,9 +117,13 @@ public class InvestManager {
 				} catch (InterruptedException ex) {
 					log.error("InterruptedException !", ex);
 				}
-				PlayerInvest[] playerInside = this.playerInside.values().toArray(new PlayerInvest[0]);
-				for (PlayerInvest pi : playerInside) {
+				int nbrPlayerInside = 0;
+				PlayerInvest[] players = this.players.values().toArray(new PlayerInvest[0]);
+				for (PlayerInvest pi : players) {
 					Player p = Bukkit.getPlayer(pi.getUUID());
+					if (!pi.getInvestType().isInside(p.getLocation()))
+						continue;
+					nbrPlayerInside++;
 					try {
 						pi.cooldown();
 						int totalSec = pi.getTime();
@@ -163,15 +167,10 @@ public class InvestManager {
 						log.error("", ex);
 					}
 				}
-				seconds++;
-				// Save
-				if (seconds % Invest.get().getConfigManager().getTimeToSave() == 0) {
-					log.info("Saving players ...");
-					for (Player p : Bukkit.getOnlinePlayers())
-						savePlayer(p);
-				}
-				// Vanish
+				this.nbrPlayerInside = nbrPlayerInside;
 				for (Player p : Bukkit.getOnlinePlayers()) {
+
+					// Vanish
 					boolean isInsideNotGlobalZone = false;
 					boolean isInsideGlobalZone = false;
 					for (InvestType it : invests.values()) {
@@ -183,7 +182,7 @@ public class InvestManager {
 								if (!Invest.get().getConfigManager().isShowInGlobal())
 									continue;
 							}
-							if (players.containsKey(p.getUniqueId()))
+							if (this.players.containsKey(p.getUniqueId()))
 								continue;
 							p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(L.get("notInvest")));
 							break;
@@ -201,6 +200,13 @@ public class InvestManager {
 							}
 					});
 				}
+				seconds++;
+				// Save
+				if (seconds % Invest.get().getConfigManager().getTimeToSave() == 0) {
+					log.info("Saving players ...");
+					for (Player p : Bukkit.getOnlinePlayers())
+						savePlayer(p);
+				}
 			}
 			log.info("Exiting loop");
 		});
@@ -209,50 +215,6 @@ public class InvestManager {
 
 	public void stopScheduler() {
 		run = false;
-	}
-
-	// ------------------------------------------------------------------------------
-
-	/**
-	 * On player move
-	 * 
-	 * @param p
-	 */
-	public void playerMove(Player p) {
-		Location loc = p.getLocation();
-		PlayerInvest inv = getInvest(p);
-		if (inv == null)
-			return;
-		boolean isInside = inv.getInvestType().isInside(loc);
-		boolean containPlayerInside = playerInside.containsKey(p.getUniqueId());
-		if (isInside && !containPlayerInside)
-			enterZone(p, inv);
-		else if (!isInside && containPlayerInside)
-			exitZone(p.getUniqueId(), inv);
-	}
-
-	/**
-	 * When a player enter to his zone
-	 * 
-	 * @param p
-	 * @param inv
-	 */
-	private void enterZone(Player p, PlayerInvest inv) {
-		// Player join the invest zone
-		playerInside.put(p.getUniqueId(), inv);
-	}
-
-	/**
-	 * When a player leave his zone
-	 * 
-	 * @param uuid
-	 * @param inv
-	 */
-	private void exitZone(UUID uuid, PlayerInvest inv) {
-		if (inv == null || !playerInside.containsKey(uuid))
-			return;
-		// Player quit the invest zone
-		playerInside.remove(uuid);
 	}
 
 	// ------------------------------------------------------------------------------
@@ -286,8 +248,6 @@ public class InvestManager {
 		}
 		PlayerInvest pi = new PlayerInvest(uuid, investType, time);
 		this.players.put(uuid, pi);
-		// Simulate a move to check if he is inside the invest zone
-		playerMove(p);
 	}
 
 	/**
@@ -302,7 +262,7 @@ public class InvestManager {
 		savePlayer(p);
 		players.remove(p.getUniqueId());
 		// Simulate a zone exit
-		exitZone(p.getUniqueId(), playerInside.get(p.getUniqueId()));
+		// exitZone(p.getUniqueId(), playerInside.get(p.getUniqueId()));
 	}
 
 	/**
@@ -336,8 +296,6 @@ public class InvestManager {
 		PlayerInvest pi = new PlayerInvest(p.getUniqueId(), inv, inv.getTimeToStay());
 		players.put(p.getUniqueId(), pi);
 		Invest.get().getPlayerManager().save(p.getUniqueId(), inv.getName(), inv.getTimeToStay());
-		// Simulate a player move
-		playerMove(p);
 	}
 
 	/**
@@ -349,11 +307,15 @@ public class InvestManager {
 		players.remove(uuid);
 		Invest.get().getPlayerManager().delete(uuid);
 		// Simulate a player move
-		exitZone(uuid, playerInside.get(uuid));
+		// exitZone(uuid, playerInside.get(uuid));
 	}
+	//
+	// public Collection<PlayerInvest> getPlayersInside() {
+	// return playerInside.values();
+	// }
 
-	public Collection<PlayerInvest> getPlayersInside() {
-		return playerInside.values();
+	public int getNumberPlayerInside() {
+		return nbrPlayerInside;
 	}
 
 	// ------------------------------------------------------------------------------

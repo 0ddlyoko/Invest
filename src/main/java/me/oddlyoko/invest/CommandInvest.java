@@ -3,8 +3,6 @@
  */
 package me.oddlyoko.invest;
 
-import java.util.Collection;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -154,7 +152,6 @@ public class CommandInvest implements CommandExecutor {
 			int investPrice;
 			int investEarned;
 			String worldguardZone = args[5];
-			// TODO Check if name already exists
 			if (Invest.get().getInvestManager().exist(name)) {
 				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.create.nameExist"));
 				return true;
@@ -322,9 +319,8 @@ public class CommandInvest implements CommandExecutor {
 				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.noperm"));
 				return true;
 			}
-			Collection<PlayerInvest> playerInvests = Invest.get().getInvestManager().getPlayersInside();
-			sender.sendMessage(Invest.prefix() + ChatColor.GREEN
-					+ L.get("command.players.total").replaceAll("%nbr%", Integer.toString(playerInvests.size())));
+			sender.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("command.players.total").replaceAll("%nbr%",
+					Integer.toString(Invest.get().getInvestManager().getNumberPlayerInside())));
 		} else if ("get".equalsIgnoreCase(args[0])) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.nothuman"));
