@@ -1,6 +1,6 @@
 name: Invest
 main: me.oddlyoko.invest.Invest
-version: 1.3
+version: 1.4
 author: 0ddlyoko
 depend: [WorldGuard, Vault]
 commands:
