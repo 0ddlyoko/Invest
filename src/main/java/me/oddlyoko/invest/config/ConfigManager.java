@@ -38,6 +38,7 @@ public class ConfigManager {
 	private int refund;
 	private boolean vanish;
 	private boolean vanishGlobal;
+	private boolean useFakeVanish;
 	private List<String> commandEnd;
 	private String prefix;
 
@@ -50,6 +51,7 @@ public class ConfigManager {
 		refund = config.getInt("refund-percent");
 		vanish = config.getBoolean("vanish");
 		vanishGlobal = config.getBoolean("vanish-global");
+		useFakeVanish = config.getBoolean("use-fake-vanish");
 		commandEnd = config.getStringList("commands-end");
 		prefix = config.getString("prefix");
 	}
@@ -80,6 +82,14 @@ public class ConfigManager {
 
 	public boolean isVanishGlobal() {
 		return vanishGlobal;
+	}
+
+	public boolean isUseFakeVanish() {
+		return useFakeVanish;
+	}
+
+	public void setUseFakeVanish(boolean useFakeVanish) {
+		this.useFakeVanish = useFakeVanish;
 	}
 
 	public List<String> getCommandEnd() {

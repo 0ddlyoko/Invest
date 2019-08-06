@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -193,10 +194,17 @@ public class InvestManager {
 						// Hide players
 						for (Player p2 : Bukkit.getOnlinePlayers())
 							if (p.getUniqueId() != p2.getUniqueId()) {
-								if (vanish)
-									p2.hidePlayer(Invest.get(), p);
-								else
-									p2.showPlayer(Invest.get(), p);
+								if (Invest.get().getConfigManager().isUseFakeVanish()) {
+									if (vanish)
+										Invest.get().getProtocolLibManager().hideEntity(p2, p);
+									else
+										Invest.get().getProtocolLibManager().showEntity(p2, p);
+								} else {
+									if (vanish)
+										p2.hidePlayer(Invest.get(), p);
+									else
+										p2.showPlayer(Invest.get(), p);
+								}
 							}
 					});
 				}
@@ -261,8 +269,6 @@ public class InvestManager {
 			return;
 		savePlayer(p);
 		players.remove(p.getUniqueId());
-		// Simulate a zone exit
-		// exitZone(p.getUniqueId(), playerInside.get(p.getUniqueId()));
 	}
 
 	/**
@@ -306,16 +312,20 @@ public class InvestManager {
 	public void stopInvest(UUID uuid) {
 		players.remove(uuid);
 		Invest.get().getPlayerManager().delete(uuid);
-		// Simulate a player move
-		// exitZone(uuid, playerInside.get(uuid));
 	}
-	//
-	// public Collection<PlayerInvest> getPlayersInside() {
-	// return playerInside.values();
-	// }
 
 	public int getNumberPlayerInside() {
 		return nbrPlayerInside;
+	}
+
+	public List<InvestType> getZoneInside(Player p) {
+		ArrayList<InvestType> invests = new ArrayList<>();
+		if (p == null)
+			return invests;
+		for (InvestType it : invests)
+			if (it.isInside(p.getLocation()))
+				invests.add(it);
+		return invests;
 	}
 
 	// ------------------------------------------------------------------------------
