@@ -14,6 +14,8 @@ refund-percent: 50
 vanish: true
 # Set player on vanish if he is in his invest zone and the region is __global__
 vanish-global: false
+# Fake vanish the player (So he stills in tab but he's just invisible)
+use-fake-vanish: true
 # Command executed when a player end his invest
 commands-end:
 - test

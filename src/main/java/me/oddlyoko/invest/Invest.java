@@ -45,6 +45,7 @@ public class Invest extends JavaPlugin {
 	private WorldGuardManager worldGuardManager;
 	private PlayerManager playerManager;
 	private VaultManager vaultManager;
+	private ProtocolLibManager protocolLibManager;
 
 	@Override
 	public void onEnable() {
@@ -98,6 +99,10 @@ public class Invest extends JavaPlugin {
 			vaultManager = new VaultManager();
 			vaultManager.init();
 			log.info("done");
+			log.info("Loading ProtocolLibManager");
+			protocolLibManager = new ProtocolLibManager();
+			protocolLibManager.init();
+			log.info("done");
 			investManager.startScheduler();
 			log.info("Plugin enabled");
 		} catch (Exception ex) {
@@ -114,6 +119,7 @@ public class Invest extends JavaPlugin {
 				investManager.unloadPlayer(p);
 			investManager.stopScheduler();
 		}
+		protocolLibManager.close();
 		log.info("Plugin disabled");
 	}
 
@@ -135,6 +141,10 @@ public class Invest extends JavaPlugin {
 
 	public VaultManager getVaultManager() {
 		return vaultManager;
+	}
+
+	public ProtocolLibManager getProtocolLibManager() {
+		return protocolLibManager;
 	}
 
 	public static Invest get() {
