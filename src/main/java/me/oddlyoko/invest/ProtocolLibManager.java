@@ -122,7 +122,6 @@ public class ProtocolLibManager implements Listener {
 					return;
 				// See if this packet should be cancelled
 				if (vanishedPlayers.contains(player)) {
-					log.info("Cancelling packet {}", event.getPacketType());
 					event.setCancelled(true);
 				}
 			}
