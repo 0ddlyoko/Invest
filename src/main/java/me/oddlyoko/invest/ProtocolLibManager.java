@@ -23,10 +23,15 @@ import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY;
 import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_LIVING;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +41,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 
 /**
  * MIT License
@@ -63,12 +66,13 @@ import com.google.common.collect.Table;
  * SOFTWARE.
  */
 /**
- * An edit version of <a href="https://gist.github.com/aadnk/5871793">that</a>
+ * A completely modified version of of
+ * <a href="https://gist.github.com/aadnk/5871793">this gist</a>
  */
-public class ProtocolLibManager {
+public class ProtocolLibManager implements Listener {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private Table<Integer, Integer, Boolean> observerPlayerMap = HashBasedTable.create();
+	private List<Player> vanishedPlayers;
 
 	// Packets that update remote player entities
 	private static final PacketType[] ENTITY_PACKETS = { ENTITY_EQUIPMENT, ANIMATION, NAMED_ENTITY_SPAWN, COLLECT,
@@ -77,6 +81,10 @@ public class ProtocolLibManager {
 			BLOCK_BREAK_ANIMATION };
 
 	private ProtocolManager protocolManager;
+
+	public ProtocolLibManager() {
+		vanishedPlayers = new ArrayList<>();
+	}
 
 	public void init() {
 		loadProtocolLib();
@@ -107,116 +115,92 @@ public class ProtocolLibManager {
 					}
 				if (player == null)
 					return;
-				// This is strange: We must NOT cancel the "ANIMATION" event if it's sent
+				// This is strange: We must NOT cancel the "ANIMATION" even if it's sent
 				// to the same player (or the player is bugged in the bed (Thanks
 				// Minecraft)
-				if (player.getEntityId() == entityId && event.getPacketType() == ANIMATION)
+				if (player.getEntityId() == entityId)
 					return;
 				// See if this packet should be cancelled
-				if (!canSee(event.getPlayer(), player))
+				if (vanishedPlayers.contains(player)) {
+					log.info("Cancelling packet {}", event.getPacketType());
 					event.setCancelled(true);
+				}
 			}
 		});
 	}
 
 	/**
-	 * Set the visibility status of a given entity for a particular observer.
+	 * Vanish a player
 	 * 
 	 * @param p
-	 *            - the observer player.
-	 * @param p2
-	 *            - the other player.
-	 * @param visible
-	 *            - TRUE if the entity should be invisible.
-	 * @return TRUE if the entity was visible before this method call, FALSE
-	 *         otherwise.
+	 *            The player to vanish
 	 */
-	private boolean setVisibility(Player p, Player p2, boolean visible) {
-		if (visible)
-			return observerPlayerMap.put(p.getEntityId(), p2.getEntityId(), true) != null;
-		else
-			return observerPlayerMap.remove(p.getEntityId(), p2.getEntityId()) != null;
-	}
-
-	/**
-	 * Toggle the visibility status of a player for a player.
-	 * <p>
-	 * If the player is visible, it will be hidden. If it is hidden, it will become
-	 * visible.
-	 * 
-	 * @param p
-	 *            - the player observer.
-	 * @param p2
-	 *            - the other player.
-	 * @return TRUE if the player was visible before, FALSE otherwise.
-	 */
-	public final boolean toggleEntity(Player p, Player p2) {
-		if (canSee(p, p2))
-			return hideEntity(p, p2);
-		else
-			return !showEntity(p, p2);
-	}
-
-	/**
-	 * Allow the observer to see a player that was previously hidden.
-	 * 
-	 * @param p
-	 *            - the observer.
-	 * @param p2
-	 *            - the player to show.
-	 * @return TRUE if the player was hidden before, FALSE otherwise.
-	 */
-	public final boolean showEntity(Player p, Player p2) {
-		boolean hiddenBefore = !setVisibility(p, p2, true);
-
-		// Resend packets
-		if (protocolManager != null && hiddenBefore)
-			protocolManager.updateEntity(p2, Arrays.asList(p));
-		return hiddenBefore;
-	}
-
-	/**
-	 * Prevent the observer from seeing a given entity.
-	 * 
-	 * @param p
-	 *            - the player observer.
-	 * @param p2
-	 *            - the player to hide.
-	 * @return TRUE if the entity was previously visible, FALSE otherwise.
-	 */
-	public final boolean hideEntity(Player p, Player p2) {
-		boolean visibleBefore = setVisibility(p, p2, false);
-
-		if (visibleBefore) {
-			PacketContainer destroyEntity = new PacketContainer(ENTITY_DESTROY);
-			destroyEntity.getIntegerArrays().write(0, new int[] { p2.getEntityId() });
-
-			// Make the entity disappear
-			try {
-				protocolManager.sendServerPacket(p, destroyEntity);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException("Cannot send server packet.", e);
+	public void vanish(Player p) {
+		if (vanishedPlayers.add(p)) {
+			// Wasn't present in the list
+			for (Player p2 : Bukkit.getOnlinePlayers()) {
+				if (p == p2)
+					continue;
+				vanish(p2, p);
 			}
 		}
-		return visibleBefore;
 	}
 
 	/**
-	 * Determine if the given entity has been hidden from an observer.
-	 * <p>
-	 * Note that the entity may very well be occluded or out of range from the
-	 * perspective of the observer. This method simply checks if an entity has been
-	 * completely hidden for that observer.
+	 * Send a packet to p saying that p2 is now vanished
 	 * 
 	 * @param p
-	 *            - the observer.
-	 * @param p2
-	 *            - the player that may be hidden.
-	 * @return TRUE if the player may see the other player, FALSE if the player has
-	 *         been hidden.
+	 *            The player to vanish
 	 */
-	public final boolean canSee(Player p, Player p2) {
-		return observerPlayerMap.contains(p.getEntityId(), p2.getEntityId());
+	private void vanish(Player p, Player p2) {
+		// Disappear the player
+		PacketContainer destroyEntity = new PacketContainer(ENTITY_DESTROY);
+		destroyEntity.getIntegerArrays().write(0, new int[] { p2.getEntityId() });
+
+		try {
+			protocolManager.sendServerPacket(p, destroyEntity);
+		} catch (InvocationTargetException ex) {
+			log.error("An error has occured while sending packet: ", ex);
+		}
+	}
+
+	/**
+	 * Unvanish a player
+	 * 
+	 * @param p
+	 *            The player to unvanish
+	 */
+	public void unVanish(Player p) {
+		if (vanishedPlayers.remove(p)) {
+			// Was present in the list
+			for (Player p2 : Bukkit.getOnlinePlayers()) {
+				if (p == p2)
+					continue;
+				unVanish(p2, p);
+			}
+		}
+	}
+
+	/**
+	 * Send a packet to p saying that p2 is not longer vanished
+	 * 
+	 * @param p
+	 *            The player to vanish
+	 */
+	public void unVanish(Player p, Player p2) {
+		// Reappear the player
+		protocolManager.updateEntity(p2, Arrays.asList(p));
+	}
+
+	@EventHandler
+	public void onPlayerConnection(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		// Vanish each players
+		for (Player p2 : vanishedPlayers) {
+			if (p == p2)
+				continue;
+			vanish(p, p2);
+		}
 	}
 
 	public final void close() {

@@ -192,20 +192,20 @@ public class InvestManager {
 					boolean vanish = (isInsideNotGlobalZone && isVanish) || (isInsideGlobalZone && isGlobalVanish);
 					Bukkit.getScheduler().runTask(Invest.get(), () -> {
 						// Hide players
-						for (Player p2 : Bukkit.getOnlinePlayers())
-							if (p.getUniqueId() != p2.getUniqueId()) {
-								if (Invest.get().getConfigManager().isUseFakeVanish()) {
-									if (vanish)
-										Invest.get().getProtocolLibManager().hideEntity(p2, p);
-									else
-										Invest.get().getProtocolLibManager().showEntity(p2, p);
-								} else {
+						if (Invest.get().getConfigManager().isUseFakeVanish()) {
+							if (vanish)
+								Invest.get().getProtocolLibManager().vanish(p);
+							else
+								Invest.get().getProtocolLibManager().unVanish(p);
+						} else {
+							for (Player p2 : Bukkit.getOnlinePlayers())
+								if (p.getUniqueId() != p2.getUniqueId()) {
 									if (vanish)
 										p2.hidePlayer(Invest.get(), p);
 									else
 										p2.showPlayer(Invest.get(), p);
 								}
-							}
+						}
 					});
 				}
 				seconds++;
