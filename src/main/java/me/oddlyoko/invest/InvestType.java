@@ -102,6 +102,9 @@ public class InvestType implements Serializable {
 			return true;
 		if (worldGuardRegion == null)
 			return false;
+		if (loc.getWorld() != spawnLoc.getWorld()
+				|| !loc.getWorld().getName().equalsIgnoreCase(spawnLoc.getWorld().getName()))
+			return false;
 		return worldGuardRegion.contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 	}
 
