@@ -188,7 +188,10 @@ public class ProtocolLibManager implements Listener {
 	 */
 	public void unVanish(Player p, Player p2) {
 		// Reappear the player
-		protocolManager.updateEntity(p2, Arrays.asList(p));
+		// Don't reappear if the player isn't in the same dimension as the other player
+		// (ProtocolLib bug)
+		if (p.getWorld() == p2.getWorld())
+			protocolManager.updateEntity(p2, Arrays.asList(p));
 	}
 
 	@EventHandler
