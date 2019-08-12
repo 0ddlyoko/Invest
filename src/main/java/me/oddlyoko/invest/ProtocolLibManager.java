@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,6 +127,7 @@ public class ProtocolLibManager implements Listener {
 				}
 			}
 		});
+		Bukkit.getPluginManager().registerEvents(this, Invest.get());
 	}
 
 	/**
@@ -135,13 +137,14 @@ public class ProtocolLibManager implements Listener {
 	 *            The player to vanish
 	 */
 	public void vanish(Player p) {
-		if (vanishedPlayers.add(p)) {
-			// Wasn't present in the list
-			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				if (p == p2)
-					continue;
-				vanish(p2, p);
-			}
+		if (vanishedPlayers.contains(p))
+			return;
+		vanishedPlayers.add(p);
+		// Wasn't present in the list
+		for (Player p2 : Bukkit.getOnlinePlayers()) {
+			if (p == p2)
+				continue;
+			vanish(p2, p);
 		}
 	}
 
@@ -173,8 +176,14 @@ public class ProtocolLibManager implements Listener {
 		if (vanishedPlayers.remove(p)) {
 			// Was present in the list
 			for (Player p2 : Bukkit.getOnlinePlayers()) {
-				if (p == p2)
+				if (p.getUniqueId() == p2.getUniqueId())
 					continue;
+				if (!Bukkit.isPrimaryThread()) {
+					Bukkit.getScheduler().runTask(Invest.get(), () -> {
+						unVanish(p2, p);
+					});
+					return;
+				}
 				unVanish(p2, p);
 			}
 		}
@@ -192,17 +201,28 @@ public class ProtocolLibManager implements Listener {
 		// (ProtocolLib bug)
 		if (p.getWorld() == p2.getWorld())
 			protocolManager.updateEntity(p2, Arrays.asList(p));
+
 	}
 
 	@EventHandler
 	public void onPlayerConnection(PlayerJoinEvent e) {
+		Bukkit.getScheduler().runTaskLater(Invest.get(), () -> {
+			Player p = e.getPlayer();
+			// Vanish each players
+			for (Player p2 : vanishedPlayers) {
+				if (p == p2)
+					continue;
+				vanish(p, p2);
+			}
+		}, 1L);
+	}
+
+	@EventHandler
+	public void onPlayerDisconnection(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
-		// Vanish each players
-		for (Player p2 : vanishedPlayers) {
-			if (p == p2)
-				continue;
-			vanish(p, p2);
-		}
+		if (!vanishedPlayers.contains(p))
+			return;
+		vanishedPlayers.remove(p);
 	}
 
 	public final void close() {

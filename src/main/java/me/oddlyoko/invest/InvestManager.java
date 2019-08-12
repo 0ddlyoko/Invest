@@ -190,14 +190,15 @@ public class InvestManager {
 						}
 					}
 					boolean vanish = (isInsideNotGlobalZone && isVanish) || (isInsideGlobalZone && isGlobalVanish);
-					Bukkit.getScheduler().runTask(Invest.get(), () -> {
-						// Hide players
-						if (Invest.get().getConfigManager().isUseFakeVanish()) {
-							if (vanish)
-								Invest.get().getProtocolLibManager().vanish(p);
-							else
-								Invest.get().getProtocolLibManager().unVanish(p);
-						} else {
+
+					// Hide players
+					if (Invest.get().getConfigManager().isUseFakeVanish()) {
+						if (vanish)
+							Invest.get().getProtocolLibManager().vanish(p);
+						else
+							Invest.get().getProtocolLibManager().unVanish(p);
+					} else {
+						Bukkit.getScheduler().runTask(Invest.get(), () -> {
 							for (Player p2 : Bukkit.getOnlinePlayers())
 								if (p.getUniqueId() != p2.getUniqueId()) {
 									if (vanish)
@@ -205,8 +206,8 @@ public class InvestManager {
 									else
 										p2.showPlayer(Invest.get(), p);
 								}
-						}
-					});
+						});
+					}
 				}
 				seconds++;
 				// Save
@@ -217,7 +218,7 @@ public class InvestManager {
 				}
 			}
 			log.info("Exiting loop");
-		});
+		}, "Invest Manager Thread");
 		t.start();
 	}
 
