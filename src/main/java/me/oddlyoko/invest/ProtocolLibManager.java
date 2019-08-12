@@ -5,6 +5,7 @@ package me.oddlyoko.invest;
 
 import static com.comphenix.protocol.PacketType.Play.Server.ANIMATION;
 import static com.comphenix.protocol.PacketType.Play.Server.ATTACH_ENTITY;
+import static com.comphenix.protocol.PacketType.Play.Server.BED;
 import static com.comphenix.protocol.PacketType.Play.Server.BLOCK_BREAK_ANIMATION;
 import static com.comphenix.protocol.PacketType.Play.Server.COLLECT;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_DESTROY;
@@ -14,13 +15,16 @@ import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_HEAD_ROTATION
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_LOOK;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_METADATA;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_MOVE_LOOK;
+import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_STATUS;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_TELEPORT;
 import static com.comphenix.protocol.PacketType.Play.Server.ENTITY_VELOCITY;
 import static com.comphenix.protocol.PacketType.Play.Server.NAMED_ENTITY_SPAWN;
 import static com.comphenix.protocol.PacketType.Play.Server.REL_ENTITY_MOVE;
 import static com.comphenix.protocol.PacketType.Play.Server.REMOVE_ENTITY_EFFECT;
 import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY;
+import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB;
 import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_LIVING;
+import static com.comphenix.protocol.PacketType.Play.Server.SPAWN_ENTITY_PAINTING;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -76,10 +80,13 @@ public class ProtocolLibManager implements Listener {
 	private List<Player> vanishedPlayers;
 
 	// Packets that update remote player entities
-	private static final PacketType[] ENTITY_PACKETS = { ENTITY_EQUIPMENT, ANIMATION, NAMED_ENTITY_SPAWN, COLLECT,
-			SPAWN_ENTITY, SPAWN_ENTITY_LIVING, ENTITY_VELOCITY, REL_ENTITY_MOVE, ENTITY_LOOK, ENTITY_MOVE_LOOK,
-			ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ATTACH_ENTITY, ENTITY_METADATA, ENTITY_EFFECT, REMOVE_ENTITY_EFFECT,
-			BLOCK_BREAK_ANIMATION };
+	private static final PacketType[] ENTITY_PACKETS = { ENTITY_EQUIPMENT, BED, ANIMATION, NAMED_ENTITY_SPAWN, COLLECT,
+			SPAWN_ENTITY, SPAWN_ENTITY_LIVING, SPAWN_ENTITY_PAINTING, SPAWN_ENTITY_EXPERIENCE_ORB, ENTITY_VELOCITY,
+			REL_ENTITY_MOVE, ENTITY_LOOK, ENTITY_MOVE_LOOK, ENTITY_TELEPORT, ENTITY_HEAD_ROTATION, ENTITY_STATUS,
+			ATTACH_ENTITY, ENTITY_METADATA, ENTITY_EFFECT, REMOVE_ENTITY_EFFECT, BLOCK_BREAK_ANIMATION
+
+			// We don't handle DESTROY_ENTITY though
+	};
 
 	private ProtocolManager protocolManager;
 
@@ -119,7 +126,7 @@ public class ProtocolLibManager implements Listener {
 				// This is strange: We must NOT cancel the "ANIMATION" even if it's sent
 				// to the same player (or the player is bugged in the bed (Thanks
 				// Minecraft)
-				if (player.getEntityId() == entityId)
+				if (event.getPlayer().getEntityId() == entityId)
 					return;
 				// See if this packet should be cancelled
 				if (vanishedPlayers.contains(player)) {
@@ -152,6 +159,8 @@ public class ProtocolLibManager implements Listener {
 	 * Send a packet to p saying that p2 is now vanished
 	 * 
 	 * @param p
+	 *            The player which we send the packet
+	 * @param p2
 	 *            The player to vanish
 	 */
 	private void vanish(Player p, Player p2) {

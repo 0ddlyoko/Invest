@@ -98,6 +98,7 @@ public class CommandInvest implements CommandExecutor {
 				sender.sendMessage(ChatColor.YELLOW + "-----------[" + ChatColor.GOLD + __.NAME + ChatColor.YELLOW
 						+ "]-----------");
 				sender.sendMessage(ChatColor.AQUA + "Created by 0ddlyoko");
+				sender.sendMessage(ChatColor.GREEN + "v" + Invest.get().getDescription().getVersion());
 				sender.sendMessage(ChatColor.AQUA + "https://www.0ddlyoko.be");
 				sender.sendMessage(ChatColor.AQUA + "https://www.github.com/0ddlyoko");
 			} else {
