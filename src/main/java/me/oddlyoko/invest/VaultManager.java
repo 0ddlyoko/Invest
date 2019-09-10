@@ -77,8 +77,10 @@ public class VaultManager {
 		switch (er.type) {
 		case FAILURE:
 			log.error("An error has occured while adding $: {}", er.errorMessage);
+			return false;
 		case NOT_IMPLEMENTED:
 			log.error("This method hasn't been implemented");
+			return false;
 		case SUCCESS:
 			log.info("Success");
 			return true;
