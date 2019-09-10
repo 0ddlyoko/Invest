@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -329,6 +330,21 @@ public class InvestManager {
 		return invests;
 	}
 
+	/**
+	 * Stop player invest and refund money. If all is true, we refund all the money
+	 * back
+	 * 
+	 * @param p
+	 * @param all
+	 * @return true if ok
+	 */
+	public boolean stopAndRefund(Player p, boolean all) {
+		PlayerInvest pi = getInvest(p);
+		stopInvest(p.getUniqueId());
+		double refund = all ? 100 : Invest.get().getConfigManager().getRefund();
+		return Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0);
+	}
+
 	// ------------------------------------------------------------------------------
 
 	private void saveToFile() throws IOException {
@@ -377,7 +393,7 @@ public class InvestManager {
 	}
 
 	/**
-	 * Delete an existing invest
+	 * Delete an existing invest and stop all players that have this invest
 	 * 
 	 * @param name
 	 * @return
@@ -389,13 +405,17 @@ public class InvestManager {
 			InvestType invest = invests.remove(name);
 			try {
 				saveToFile();
-				return true;
 			} catch (Exception ex) {
 				// Re-set Invest into the Map
 				invests.put(invest.getName(), invest);
 				log.error("Error while saving invests to invest.json file: ", ex);
 				return false;
 			}
+			// Remove all players
+			for (Entry<UUID, PlayerInvest> e : new ArrayList<>(players.entrySet()))
+				if (e.getValue().getInvestType() == invest)
+					stopAndRefund(Bukkit.getPlayer(e.getKey()), true);
+			return true;
 		}
 	}
 

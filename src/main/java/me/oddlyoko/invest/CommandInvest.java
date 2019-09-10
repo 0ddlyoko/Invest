@@ -307,10 +307,7 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.stop.notInvest"));
 				return true;
 			}
-			PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
-			Invest.get().getInvestManager().stopInvest(p.getUniqueId());
-			double refund = Invest.get().getConfigManager().getRefund();
-			if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0)) {
+			if (!Invest.get().getInvestManager().stopAndRefund(p, false)) {
 				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("error"));
 				return true;
 			}
