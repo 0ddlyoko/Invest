@@ -236,7 +236,6 @@ public class InvestManager {
 	 * @param p
 	 */
 	public void loadPlayer(Player p) {
-		log.info("Loading player {}", p.getName());
 		// Player already loaded
 		if (players.containsKey(p.getUniqueId()))
 			return;
@@ -267,7 +266,6 @@ public class InvestManager {
 	 * @param p
 	 */
 	public void unloadPlayer(Player p) {
-		log.info("Unloading player {}", p.getName());
 		if (!players.containsKey(p.getUniqueId()))
 			return;
 		savePlayer(p);
