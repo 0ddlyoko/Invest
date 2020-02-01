@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.invest;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
+import me.oddlyoko.invest.Invest;
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerInvest;
 import net.md_5.bungee.api.ChatMessageType;
@@ -234,7 +236,6 @@ public class InvestManager {
 	 * @param p
 	 */
 	public void loadPlayer(Player p) {
-		log.info("Loading player {}", p.getName());
 		// Player already loaded
 		if (players.containsKey(p.getUniqueId()))
 			return;
@@ -265,7 +266,6 @@ public class InvestManager {
 	 * @param p
 	 */
 	public void unloadPlayer(Player p) {
-		log.info("Unloading player {}", p.getName());
 		if (!players.containsKey(p.getUniqueId()))
 			return;
 		savePlayer(p);
@@ -329,6 +329,21 @@ public class InvestManager {
 		return invests;
 	}
 
+	/**
+	 * Stop player invest and refund money. If all is true, we refund all the money
+	 * back
+	 * 
+	 * @param p
+	 * @param all
+	 * @return true if ok
+	 */
+	public boolean stopAndRefund(Player p, boolean all) {
+		PlayerInvest pi = getInvest(p);
+		stopInvest(p.getUniqueId());
+		double refund = all ? 100 : Invest.get().getConfigManager().getRefund();
+		return Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0);
+	}
+
 	// ------------------------------------------------------------------------------
 
 	private void saveToFile() throws IOException {
@@ -377,7 +392,7 @@ public class InvestManager {
 	}
 
 	/**
-	 * Delete an existing invest
+	 * Delete an existing invest and stop all players that have this invest
 	 * 
 	 * @param name
 	 * @return
@@ -389,13 +404,17 @@ public class InvestManager {
 			InvestType invest = invests.remove(name);
 			try {
 				saveToFile();
-				return true;
 			} catch (Exception ex) {
 				// Re-set Invest into the Map
 				invests.put(invest.getName(), invest);
 				log.error("Error while saving invests to invest.json file: ", ex);
 				return false;
 			}
+			// Remove all players
+			for (Entry<UUID, PlayerInvest> e : new ArrayList<>(players.entrySet()))
+				if (e.getValue().getInvestType() == invest)
+					stopAndRefund(Bukkit.getPlayer(e.getKey()), true);
+			return true;
 		}
 	}
 

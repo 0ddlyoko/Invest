@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerInvest;
+import me.oddlyoko.invest.invest.InvestType;
 
 /**
  * MIT License
@@ -307,10 +308,7 @@ public class CommandInvest implements CommandExecutor {
 				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("command.stop.notInvest"));
 				return true;
 			}
-			PlayerInvest pi = Invest.get().getInvestManager().getInvest(p);
-			Invest.get().getInvestManager().stopInvest(p.getUniqueId());
-			double refund = Invest.get().getConfigManager().getRefund();
-			if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0)) {
+			if (!Invest.get().getInvestManager().stopAndRefund(p, false)) {
 				p.sendMessage(Invest.prefix() + ChatColor.RED + L.get("error"));
 				return true;
 			}
