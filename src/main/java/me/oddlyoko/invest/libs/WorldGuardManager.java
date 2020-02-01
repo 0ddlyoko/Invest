@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.libs;
 
 import java.util.Collection;
 
@@ -11,9 +11,13 @@ import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import me.oddlyoko.invest.invest.InvestType;
 
 /**
  * MIT License
@@ -40,7 +44,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
  */
 public class WorldGuardManager {
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private WorldGuardPlugin worldGuard;
 
 	public void init(Collection<InvestType> invests) {
 		loadWorldGuard();
@@ -52,7 +55,6 @@ public class WorldGuardManager {
 		// WorldGuard may not be loaded
 		if (plugin == null || !(plugin instanceof WorldGuardPlugin))
 			throw new IllegalStateException("WorldGuard isn't load or is not present");
-		worldGuard = (WorldGuardPlugin) plugin;
 	}
 
 	private void loadRegions(Collection<InvestType> invests) {
@@ -63,7 +65,7 @@ public class WorldGuardManager {
 	public boolean loadRegion(InvestType inv) {
 		World world = inv.getSpawn().getWorld();
 		String region = inv.getWorldguardZone();
-		RegionManager rm = worldGuard.getRegionManager(world);
+		RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 		if (rm == null) {
 			// Error
 			log.error("Error while loading region {} in world {}: World not found !", region, world);

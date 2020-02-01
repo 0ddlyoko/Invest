@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.libs;
 
 import static com.comphenix.protocol.PacketType.Play.Server.ANIMATION;
 import static com.comphenix.protocol.PacketType.Play.Server.ATTACH_ENTITY;
@@ -46,6 +46,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+
+import me.oddlyoko.invest.Invest;
 
 /**
  * MIT License

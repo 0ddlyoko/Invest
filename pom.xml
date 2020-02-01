@@ -114,15 +114,15 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.12.2-R0.1-SNAPSHOT</version>
+			<version>1.13.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- World Guard -->
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
-			<artifactId>worldguard-legacy</artifactId>
-			<version>6.2</version>
+			<artifactId>worldguard-bukkit</artifactId>
+			<version>7.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -141,7 +141,7 @@
 			<version>4.4.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

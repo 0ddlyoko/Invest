@@ -3,7 +3,7 @@ main: me.oddlyoko.invest.Invest
 version: 1.8
 author: 0ddlyoko
 depend: [WorldGuard, Vault]
-softdepend: [ProtocolLib]
+softdepend: [ProtocolLib, Multiverse-Core]
 commands:
   invest:
     description: Help Invest

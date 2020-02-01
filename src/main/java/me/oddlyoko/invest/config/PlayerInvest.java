@@ -5,7 +5,7 @@ package me.oddlyoko.invest.config;
 
 import java.util.UUID;
 
-import me.oddlyoko.invest.InvestType;
+import me.oddlyoko.invest.invest.InvestType;
 
 /**
  * MIT License

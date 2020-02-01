@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerInvest;
+import me.oddlyoko.invest.invest.InvestType;
 
 /**
  * MIT License

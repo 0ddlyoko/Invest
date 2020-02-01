@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import me.oddlyoko.invest.config.ConfigManager;
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerManager;
+import me.oddlyoko.invest.invest.InvestListener;
+import me.oddlyoko.invest.invest.InvestManager;
+import me.oddlyoko.invest.libs.ProtocolLibManager;
+import me.oddlyoko.invest.libs.VaultManager;
+import me.oddlyoko.invest.libs.WorldGuardManager;
 
 /**
  * MIT License
@@ -119,7 +124,8 @@ public class Invest extends JavaPlugin {
 				investManager.unloadPlayer(p);
 			investManager.stopScheduler();
 		}
-		protocolLibManager.close();
+		if (protocolLibManager != null)
+			protocolLibManager.close();
 		log.info("Plugin disabled");
 	}
 

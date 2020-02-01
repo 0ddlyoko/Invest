@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest;
+package me.oddlyoko.invest.invest;
 
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
+import me.oddlyoko.invest.Invest;
 import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerInvest;
 import net.md_5.bungee.api.ChatMessageType;
