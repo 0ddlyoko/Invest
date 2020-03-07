@@ -1,6 +1,6 @@
 name: Invest
 main: me.oddlyoko.invest.Invest
-version: 1.8
+version: 1.9
 author: 0ddlyoko
 depend: [WorldGuard, Vault]
 softdepend: [ProtocolLib, Multiverse-Core]

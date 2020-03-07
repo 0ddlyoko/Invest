@@ -56,60 +56,63 @@ public class Invest extends JavaPlugin {
 	public void onEnable() {
 		try {
 			saveDefaultConfig();
-			log.info("Loading plugin Invest");
-			invest = this;
-			log.info("Loading ConfigManager");
-			configManager = new ConfigManager();
-			log.info("done");
-			prefix = (configManager.getPrefix() != null && !"".equalsIgnoreCase(configManager.getPrefix().trim()))
-					? configManager.getPrefix()
-					: __.PREFIX;
-			log.info("Loading Languages");
-			L.init();
-			log.info("done");
-			log.info("Loading PlayerManager");
-			playerManager = new PlayerManager();
-			log.info("done");
-			try {
-				log.info("Loading InvestManager");
-				investManager = new InvestManager();
+			log.info("Loading Invest in one tick ...");
+			// This is to prevent registering regions that are in unloaded worlds 
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+				log.info("Loading plugin Invest");
+				invest = this;
+				log.info("Loading ConfigManager");
+				configManager = new ConfigManager();
 				log.info("done");
-			} catch (Exception ex) {
-				log.error("An unexpected error has occured while loading InvestManager: ", ex);
-				Bukkit.getPluginManager().disablePlugin(this);
-				setEnabled(false);
-				return;
-			}
-			log.info("Loading WorldGuardManager");
-			worldGuardManager = new WorldGuardManager();
-			try {
-				worldGuardManager.init(investManager.list());
+				prefix = (configManager.getPrefix() != null && !"".equalsIgnoreCase(configManager.getPrefix().trim()))
+						? configManager.getPrefix()
+						: __.PREFIX;
+				log.info("Loading Languages");
+				L.init();
 				log.info("done");
-			} catch (Exception ex) {
-				log.error("Error while loading WorldGuard: ", ex);
-				Bukkit.getPluginManager().disablePlugin(this);
-				setEnabled(false);
-				return;
-			}
-			log.info("Loading Commands");
-			Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
-			log.info("done");
-			log.info("Loading Listeners");
-			Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
-			log.info("done");
-			log.info("Loading Players");
-			investManager.loadPlayers();
-			log.info("done");
-			log.info("Loading VaultManager");
-			vaultManager = new VaultManager();
-			vaultManager.init();
-			log.info("done");
-			log.info("Loading ProtocolLibManager");
-			protocolLibManager = new ProtocolLibManager();
-			protocolLibManager.init();
-			log.info("done");
-			investManager.startScheduler();
-			log.info("Plugin enabled");
+				log.info("Loading PlayerManager");
+				playerManager = new PlayerManager();
+				log.info("done");
+				try {
+					log.info("Loading InvestManager");
+					investManager = new InvestManager();
+					log.info("done");
+				} catch (Exception ex) {
+					log.error("An unexpected error has occured while loading InvestManager: ", ex);
+					Bukkit.getPluginManager().disablePlugin(this);
+					setEnabled(false);
+					return;
+				}
+				worldGuardManager = new WorldGuardManager();
+				try {
+					worldGuardManager.init(investManager.list());
+					log.info("done");
+				} catch (Exception ex) {
+					log.error("Error while loading WorldGuard: ", ex);
+					Bukkit.getPluginManager().disablePlugin(this);
+					setEnabled(false);
+					return;
+				}
+				log.info("Loading Commands");
+				Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
+				log.info("done");
+				log.info("Loading Listeners");
+				Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
+				log.info("done");
+				log.info("Loading Players");
+				investManager.loadPlayers();
+				log.info("done");
+				log.info("Loading VaultManager");
+				vaultManager = new VaultManager();
+				vaultManager.init();
+				log.info("done");
+				log.info("Loading ProtocolLibManager");
+				protocolLibManager = new ProtocolLibManager();
+				protocolLibManager.init();
+				log.info("done");
+				investManager.startScheduler();
+				log.info("Plugin enabled");
+			}, 1L);
 		} catch (Exception ex) {
 			log.error("An error has occured while loading Invest", ex);
 			Bukkit.getPluginManager().disablePlugin(this);
