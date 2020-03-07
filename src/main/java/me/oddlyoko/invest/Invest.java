@@ -106,10 +106,15 @@ public class Invest extends JavaPlugin {
 				vaultManager = new VaultManager();
 				vaultManager.init();
 				log.info("done");
-				log.info("Loading ProtocolLibManager");
-				protocolLibManager = new ProtocolLibManager();
-				protocolLibManager.init();
-				log.info("done");
+				if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
+					Invest.get().getConfigManager().setUseFakeVanish(false);
+					log.info("ProtocolLib isn't present, the \"use-fake-vanish\" key has been disabled !");
+				} else {
+					log.info("Loading ProtocolLibManager");
+					protocolLibManager = new ProtocolLibManager();
+					protocolLibManager.init();
+					log.info("done");
+				}
 				investManager.startScheduler();
 				log.info("Plugin enabled");
 			}, 1L);
