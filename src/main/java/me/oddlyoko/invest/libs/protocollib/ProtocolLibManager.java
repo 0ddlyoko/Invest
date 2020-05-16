@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest.libs;
+package me.oddlyoko.invest.libs.protocollib;
 
 import static com.comphenix.protocol.PacketType.Play.Server.ANIMATION;
 import static com.comphenix.protocol.PacketType.Play.Server.ATTACH_ENTITY;

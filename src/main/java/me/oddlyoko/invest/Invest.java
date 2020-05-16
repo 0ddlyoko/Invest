@@ -14,9 +14,7 @@ import me.oddlyoko.invest.config.L;
 import me.oddlyoko.invest.config.PlayerManager;
 import me.oddlyoko.invest.invest.InvestListener;
 import me.oddlyoko.invest.invest.InvestManager;
-import me.oddlyoko.invest.libs.ProtocolLibManager;
-import me.oddlyoko.invest.libs.VaultManager;
-import me.oddlyoko.invest.libs.WorldGuardManager;
+import me.oddlyoko.invest.libs.LibManager;
 
 /**
  * MIT License
@@ -47,18 +45,16 @@ public class Invest extends JavaPlugin {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ConfigManager configManager;
 	private InvestManager investManager;
-	private WorldGuardManager worldGuardManager;
 	private PlayerManager playerManager;
-	private VaultManager vaultManager;
-	private ProtocolLibManager protocolLibManager;
+	private LibManager libManager;
 
 	@Override
 	public void onEnable() {
-		try {
-			saveDefaultConfig();
-			log.info("Loading Invest in one tick ...");
-			// This is to prevent registering regions that are in unloaded worlds 
-			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+		saveDefaultConfig();
+		log.info("Loading Invest in one tick ...");
+		// This is to prevent registering regions that are in unloaded worlds
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+			try {
 				log.info("Loading plugin Invest");
 				invest = this;
 				log.info("Loading ConfigManager");
@@ -73,56 +69,36 @@ public class Invest extends JavaPlugin {
 				log.info("Loading PlayerManager");
 				playerManager = new PlayerManager();
 				log.info("done");
-				try {
-					log.info("Loading InvestManager");
-					investManager = new InvestManager();
+				log.info("Loading InvestManager");
+				investManager = new InvestManager();
+				log.info("done");
+				log.info("Loading Libs ...");
+				libManager = new LibManager();
+				if (libManager.load()) {
 					log.info("done");
-				} catch (Exception ex) {
-					log.error("An unexpected error has occured while loading InvestManager: ", ex);
-					Bukkit.getPluginManager().disablePlugin(this);
-					setEnabled(false);
-					return;
-				}
-				worldGuardManager = new WorldGuardManager();
-				try {
-					worldGuardManager.init(investManager.list());
+					log.info("Loading Commands");
+					Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
 					log.info("done");
-				} catch (Exception ex) {
-					log.error("Error while loading WorldGuard: ", ex);
-					Bukkit.getPluginManager().disablePlugin(this);
-					setEnabled(false);
-					return;
-				}
-				log.info("Loading Commands");
-				Bukkit.getPluginCommand("invest").setExecutor(new CommandInvest());
-				log.info("done");
-				log.info("Loading Listeners");
-				Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
-				log.info("done");
-				log.info("Loading Players");
-				investManager.loadPlayers();
-				log.info("done");
-				log.info("Loading VaultManager");
-				vaultManager = new VaultManager();
-				vaultManager.init();
-				log.info("done");
-				if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
-					Invest.get().getConfigManager().setUseFakeVanish(false);
-					log.info("ProtocolLib isn't present, the \"use-fake-vanish\" key has been disabled !");
+					log.info("Loading Listeners");
+					Bukkit.getPluginManager().registerEvents(new InvestListener(), this);
+					log.info("done");
+					log.info("Loading Players");
+					investManager.loadPlayers();
+					log.info("done");
+					investManager.startScheduler();
+					log.info("Plugin enabled");
 				} else {
-					log.info("Loading ProtocolLibManager");
-					protocolLibManager = new ProtocolLibManager();
-					protocolLibManager.init();
-					log.info("done");
+					// Disabling plugin
+					getPluginLoader().disablePlugin(this);
+					setEnabled(false);
+					return;
 				}
-				investManager.startScheduler();
-				log.info("Plugin enabled");
-			}, 1L);
-		} catch (Exception ex) {
-			log.error("An error has occured while loading Invest", ex);
-			Bukkit.getPluginManager().disablePlugin(this);
-			setEnabled(false);
-		}
+			} catch (Exception ex) {
+				log.error("An error has occured while loading Invest: ", ex);
+				Bukkit.getPluginManager().disablePlugin(this);
+				setEnabled(false);
+			}
+		}, 1L);
 	}
 
 	@Override
@@ -132,13 +108,12 @@ public class Invest extends JavaPlugin {
 				investManager.unloadPlayer(p);
 			investManager.stopScheduler();
 		}
-		if (protocolLibManager != null)
-			protocolLibManager.close();
+		libManager.close();
 		log.info("Plugin disabled");
 	}
 
-	public WorldGuardManager getWorldGuardManager() {
-		return worldGuardManager;
+	public LibManager getLibManager() {
+		return libManager;
 	}
 
 	public ConfigManager getConfigManager() {
@@ -151,14 +126,6 @@ public class Invest extends JavaPlugin {
 
 	public PlayerManager getPlayerManager() {
 		return playerManager;
-	}
-
-	public VaultManager getVaultManager() {
-		return vaultManager;
-	}
-
-	public ProtocolLibManager getProtocolLibManager() {
-		return protocolLibManager;
 	}
 
 	public static Invest get() {
