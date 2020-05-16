@@ -158,7 +158,7 @@ public class InvestManager {
 									Integer.toString(pi.getInvestType().getInvestEarned())));
 							log.info("Investisment of uuid {} is ended ! type = {}, earned = {}", pi.getUUID(),
 									pi.getInvestType().getName(), pi.getInvestType().getInvestEarned());
-							if (!Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestEarned())) {
+							if (!Invest.get().getLibManager().getVault().add(p, pi.getInvestType().getInvestEarned())) {
 								p.sendMessage(Invest.prefix() + ChatColor.GREEN + L.get("error"));
 								log.error(
 										"Investisment of uuid {} is ended, but got error, please give him {}$ manually",
@@ -196,9 +196,9 @@ public class InvestManager {
 					// Hide players
 					if (Invest.get().getConfigManager().isUseFakeVanish()) {
 						if (vanish)
-							Invest.get().getProtocolLibManager().vanish(p);
+							Invest.get().getLibManager().getProtocolLib().vanish(p);
 						else
-							Invest.get().getProtocolLibManager().unVanish(p);
+							Invest.get().getLibManager().getProtocolLib().unVanish(p);
 					} else {
 						Bukkit.getScheduler().runTask(Invest.get(), () -> {
 							for (Player p2 : Bukkit.getOnlinePlayers())
@@ -341,7 +341,7 @@ public class InvestManager {
 		PlayerInvest pi = getInvest(p);
 		stopInvest(p.getUniqueId());
 		double refund = all ? 100 : Invest.get().getConfigManager().getRefund();
-		return Invest.get().getVaultManager().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0);
+		return Invest.get().getLibManager().getVault().add(p, pi.getInvestType().getInvestPrice() * refund / 100.0);
 	}
 
 	// ------------------------------------------------------------------------------
@@ -375,7 +375,7 @@ public class InvestManager {
 		InvestType inv = new InvestType(name, timeToStay, investPrice, investEarned, worldguardZone, spawn);
 		synchronized (sync) {
 			invests.put(name, inv);
-			if (!Invest.get().getWorldGuardManager().loadRegion(inv)) {
+			if (!Invest.get().getLibManager().getWorldGuard().loadRegion(inv)) {
 				log.error("An error has occured while loading region for invest {}", name);
 				invests.remove(name);
 				return false;

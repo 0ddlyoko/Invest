@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.oddlyoko.invest.libs;
+package me.oddlyoko.invest.libs.vault;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

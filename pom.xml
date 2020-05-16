@@ -5,7 +5,7 @@
 
 	<groupId>me.oddlyoko</groupId>
 	<artifactId>Invest</artifactId>
-	<version>1.10</version>
+	<version>1.11</version>
 	<packaging>jar</packaging>
 
 	<name>Invest</name>
@@ -82,7 +82,7 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>sk89q-repo</id>
+			<id>sk89q-repo-1</id>
 			<url>https://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
@@ -118,7 +118,14 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- World Guard -->
+		<!-- World Guard v6 -->
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>6.1.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- World Guard v7 -->
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-bukkit</artifactId>
