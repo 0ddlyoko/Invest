@@ -52,7 +52,7 @@ import me.oddlyoko.invest.Invest;
 /**
  * MIT License
  * 
- * Copyright (c) 2019 0ddlyoko
+ * Copyright (c) 2020 0ddlyoko
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -127,7 +127,7 @@ public class ProtocolLibManager implements Listener {
 					return;
 				// This is strange: We must NOT cancel the "ANIMATION" even if it's sent
 				// to the same player (or the player is bugged in the bed (Thanks
-				// Minecraft)
+				// Minecraft))
 				if (event.getPlayer().getEntityId() == entityId)
 					return;
 				// See if this packet should be cancelled
@@ -143,7 +143,7 @@ public class ProtocolLibManager implements Listener {
 	 * Vanish a player
 	 * 
 	 * @param p
-	 *            The player to vanish
+	 *              The player to vanish
 	 */
 	public void vanish(Player p) {
 		if (vanishedPlayers.contains(p))
@@ -161,9 +161,9 @@ public class ProtocolLibManager implements Listener {
 	 * Send a packet to p saying that p2 is now vanished
 	 * 
 	 * @param p
-	 *            The player which we send the packet
+	 *               The player which we send the packet
 	 * @param p2
-	 *            The player to vanish
+	 *               The player to vanish
 	 */
 	private void vanish(Player p, Player p2) {
 		// Disappear the player
@@ -181,7 +181,7 @@ public class ProtocolLibManager implements Listener {
 	 * Unvanish a player
 	 * 
 	 * @param p
-	 *            The player to unvanish
+	 *              The player to unvanish
 	 */
 	public void unVanish(Player p) {
 		if (vanishedPlayers.remove(p)) {
@@ -204,7 +204,7 @@ public class ProtocolLibManager implements Listener {
 	 * Send a packet to p saying that p2 is not longer vanished
 	 * 
 	 * @param p
-	 *            The player to vanish
+	 *              The player to vanish
 	 */
 	public void unVanish(Player p, Player p2) {
 		// Reappear the player
