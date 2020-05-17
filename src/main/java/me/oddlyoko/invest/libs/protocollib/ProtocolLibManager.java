@@ -73,7 +73,7 @@ import me.oddlyoko.invest.Invest;
  * SOFTWARE.
  */
 /**
- * A completely modified version of of
+ * A completely modified version of
  * <a href="https://gist.github.com/aadnk/5871793">this gist</a>
  */
 public class ProtocolLibManager implements Listener {
